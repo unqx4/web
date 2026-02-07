@@ -1,3 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Origen Humano | Tecnología & Supervivencia</title>
+
+  <!-- ================== FUENTES ================== -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ================== RESET ================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    /* ================== HERO ================== */
+    .hero {
+      height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.95)),
+        url('https://images.unsplash.com/photo-1549880338-65ddcdfd017b');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 7vw, 5rem);
+      letter-spacing: 4px;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      max-width: 800px;
+      font-size: 1.2rem;
+      opacity: 0.85;
+    }
+
+    .scroll {
+      position: absolute;
+      bottom: 30px;
+      font-size: 0.9rem;
+      opacity: 0.6;
+      animation: float 2s infinite;
     }
 
     @keyframes float {
@@ -731,16 +793,16 @@
         const q = questions[idx];
         updateProgress();
         // hero image for visual mood
-        if(heroEl) heroEl.style.backgroundImage = `url('${heroImages[idx % heroImages.length]}')`;
+        if(heroEl) heroEl.style.backgroundImage = url('${heroImages[idx % heroImages.length]}');
 
         qArea.innerHTML = '';
-        const qText = document.createElement('div'); qText.className='q-text'; qText.textContent = `${idx+1}. ${q.q}`;
+        const qText = document.createElement('div'); qText.className='q-text'; qText.textContent = ${idx+1}. ${q.q};
         qArea.appendChild(qText);
 
         const opts = document.createElement('div'); opts.className='options';
         q.opts.forEach((o,i)=>{
           const el = document.createElement('div'); el.className='option'; el.tabIndex=0; el.setAttribute('data-i',i);
-          el.innerHTML = `<span class="dot"></span><div class="label"><strong>${['A)','B)','C)'][i]}</strong> &nbsp; ${o}</div>`;
+          el.innerHTML = <span class="dot"></span><div class="label"><strong>${['A)','B)','C)'][i]}</strong> &nbsp; ${o}</div>;
           if(answers[idx]===i) el.classList.add('selected');
           el.addEventListener('click', ()=>{ select(i); });
           el.addEventListener('keypress', (ev)=>{ if(ev.key==='Enter') select(i); });
@@ -752,7 +814,7 @@
         nextBtn.textContent = (idx===questions.length-1)? 'Terminar' : 'Siguiente';
       }
 
-      function select(i){ answers[idx]=i; const els = qArea.querySelectorAll('.option'); els.forEach(el=>el.classList.remove('selected')); const sel = qArea.querySelector(`.option[data-i="${i}"]`); if(sel) sel.classList.add('selected'); }
+      function select(i){ answers[idx]=i; const els = qArea.querySelectorAll('.option'); els.forEach(el=>el.classList.remove('selected')); const sel = qArea.querySelector(.option[data-i="${i}"]); if(sel) sel.classList.add('selected'); }
 
       function prevHandler(){ if(idx>0){ idx--; render(); } }
       function nextHandler(){ if(answers[idx]===null){ alert('Selecciona una opción antes de continuar.'); return; } if(idx<questions.length-1){ idx++; render(); } else { finish(); } }
@@ -766,11 +828,11 @@
         const decimalScore = Math.round((pct*5)*10)/10; // 0.0 - 5.0 step 0.1
 
         // Mostrar resultados
-        qArea.innerHTML = `<div class="result">
+        qArea.innerHTML = <div class="result">
           <div class="score-big">${decimalScore} / 5.0</div>
           <div class="score-sub">Aciertos: ${correct} de ${questions.length} (${Math.round(pct*100)}%)</div>
           <div style="margin-top:12px;color:#9aa8bf">${decimalScore>=4 ? 'Excelente comprensión.' : (decimalScore>=3 ? 'Buen entendimiento, repasa algunos puntos.' : 'Sigue aprendiendo — vuelve a intentarlo')}</div>
-        </div>`;
+        </div>;
         progressEl.style.width = '100%'; if(percentEl) percentEl.textContent = '100%';
         prevBtn.style.display = 'none';
         // show confetti for good scores
@@ -794,15 +856,15 @@
           el.style.left = (50 + (Math.random()*60-30)) + '%';
           el.style.top = '-10%';
           const rot = Math.random()*360;
-          el.style.transform = `translateY(0) rotate(${rot}deg)`;
+          el.style.transform = translateY(0) rotate(${rot}deg);
           document.body.appendChild(el);
           // animate
           const dx = (Math.random()*140-70);
           const dy = 120 + Math.random()*280;
           const dur = 2000 + Math.random()*1200;
           el.animate([
-            { transform: `translateY(0) rotate(${rot}deg)`, opacity:1 },
-            { transform: `translate(${dx}px, ${dy}px) rotate(${rot+180}deg)`, opacity:0.1 }
+            { transform: translateY(0) rotate(${rot}deg), opacity:1 },
+            { transform: translate(${dx}px, ${dy}px) rotate(${rot+180}deg), opacity:0.1 }
           ], { duration: dur, easing: 'cubic-bezier(.2,.8,.2,1)' });
           setTimeout(()=>el.remove(), 3200);
         }
@@ -830,4 +892,3 @@
 
 </body>
 </html>
-
