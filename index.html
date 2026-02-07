@@ -1,1 +1,895 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Origen Humano | Tecnología & Supervivencia</title>
+
+  <!-- ================== FUENTES ================== -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ================== RESET ================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    /* ================== HERO ================== */
+    .hero {
+      height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.95)),
+        url('https://images.unsplash.com/photo-1549880338-65ddcdfd017b');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 7vw, 5rem);
+      letter-spacing: 4px;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      max-width: 800px;
+      font-size: 1.2rem;
+      opacity: 0.85;
+    }
+
+    .scroll {
+      position: absolute;
+      bottom: 30px;
+      font-size: 0.9rem;
+      opacity: 0.6;
+      animation: float 2s infinite;
+    }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* ================== SECTIONS ================== */
+    section {
+      padding: 140px 10%;
+      position: relative;
+    }
+
+    section::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+      opacity: 0.2;
+    }
+
+    h2 {
+      font-size: 2.8rem;
+      margin-bottom: 30px;
+      color: #38bdf8;
+    }
+
+    p {
+      max-width: 900px;
+      line-height: 1.8;
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    /* ================== STORY BLOCK ================== */
+    .story {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .story img {
+      width: 100%;
+      border-radius: 30px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    }
+
+    /* ================== CARDS ================== */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 40px;
+      margin-top: 60px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 25px;
+      padding: 35px;
+      backdrop-filter: blur(10px);
+      transition: all 0.5s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-15px) scale(1.03);
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+    }
+
+    .card h3 {
+      margin-bottom: 15px;
+      color: #facc15;
+    }
+
+    /* ================== ICE AGE ================== */
+    .ice {
+      background:
+        linear-gradient(180deg, rgba(2,6,23,0.85), rgba(2,6,23,1)),
+        url('https://images.unsplash.com/photo-1483729558449-99ef09a8c325');
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* ================== FINAL ================== */
+    footer {
+      padding: 80px 10%;
+      text-align: center;
+      font-size: 0.9rem;
+      opacity: 0.6;
+    }
+
+    /* ================== REVEAL ================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(60px);
+      transition: all 1s ease;
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media(max-width: 900px) {
+      .story {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <!-- ================== QUIZ CSS (Mejorado) ================== -->
+  <style>
+    /* Floating quiz button - animado y atractivo */
+    .quiz-btn{
+      position:fixed; right:24px; top:24px; width:64px; height:64px; border-radius:50%; z-index:9999;
+      background:linear-gradient(135deg, #00ffd5 0%, #0099ff 50%, #6600ff 100%);
+      display:flex; align-items:center; justify-content:center;
+      box-shadow: 0 0 30px rgba(0,255,213,0.3), 0 12px 40px rgba(0,102,255,0.25);
+      cursor:pointer; border:none;
+      transition: all .3s cubic-bezier(.34,1.56,.64,1); font-size:0;
+      animation: float-pulse 3s ease-in-out infinite;
+    }
+    .quiz-btn:hover{
+      transform: scale(1.15) translateY(-6px);
+      box-shadow: 0 0 50px rgba(0,255,213,0.5), 0 20px 60px rgba(0,102,255,0.4);
+    }
+    @keyframes float-pulse{
+      0%,100% { transform: translateY(0) }
+      50% { transform: translateY(-8px) }
+    }
+    .quiz-btn svg{width:32px; height:32px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));}
+
+    /* Modal overlay */
+    .quiz-overlay{
+      position:fixed; inset:0; background: linear-gradient(135deg, rgba(2,6,23,0.85), rgba(6,10,25,0.92));
+      display:none; align-items:center; justify-content:center; z-index:10000; padding:16px;
+      backdrop-filter: blur(8px);
+    }
+    .quiz-overlay.open{display:flex; animation: fadeIn .4s ease}
+
+    @keyframes fadeIn{ from{ opacity:0 } to{ opacity:1 } }
+
+    .quiz-card{
+      width:100%; max-width:1000px; 
+      background: linear-gradient(180deg, rgba(8,12,20,0.96) 0%, rgba(4,8,16,0.98) 100%);
+      border-radius: 16px; padding:0; overflow:hidden;
+      box-shadow: 0 0 80px rgba(0,255,213,0.15), 0 20px 100px rgba(0,0,0,0.8);
+      border: 1px solid rgba(0,200,255,0.12);
+      transform: scale(0.95) translateY(20px); opacity:0;
+      transition: all .5s cubic-bezier(.2,.9,.2,1);
+    }
+    .quiz-overlay.open .quiz-card{
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+
+    .quiz-hero{
+      height: 160px; background-size: cover; background-position: center;
+      position: relative; overflow: hidden;
+    }
+    .quiz-hero::before{
+      content: '';
+      position: absolute; inset:0;
+      background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%);
+    }
+
+    .quiz-header{
+      padding: 20px 28px; display: flex; align-items: center;
+      justify-content: space-between; gap: 16px; position: relative; z-index: 1;
+      border-bottom: 1px solid rgba(0,200,255,0.08);
+    }
+    .quiz-header-content h2{
+      margin: 0; font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem; color: #00ffd5; font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .quiz-header-content p{
+      margin: 4px 0 0 0; font-size: 0.85rem; color: #9aa8bf;
+    }
+    .quiz-close{
+      background: linear-gradient(135deg, rgba(255,100,150,0.12), rgba(150,50,200,0.08));
+      border: 1px solid rgba(255,100,150,0.2); color: #ff6a9d; cursor: pointer;
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 300; transition: all .2s;
+    }
+    .quiz-close:hover{
+      background: rgba(255,100,150,0.2); transform: rotate(90deg);
+    }
+
+    .quiz-body{
+      padding: 20px 28px;
+    }
+
+    .progress{
+      height: 12px; background: rgba(255,255,255,0.03);
+      border-radius: 999px; overflow: hidden; position: relative;
+      margin-bottom: 20px; border: 1px solid rgba(0,200,255,0.08);
+    }
+    .progress > i{
+      display: block; height: 100%;
+      background: linear-gradient(90deg, #00ffd5 0%, #0099ff 50%, #6600ff 100%);
+      width: 0%; transition: width .5s cubic-bezier(.2,.8,.2,1);
+      box-shadow: 0 0 20px rgba(0,255,213,0.6);
+    }
+    .progress .percent{
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%); font-size: 0.8rem;
+      color: #00ffd5; font-weight: 700; z-index: 2;
+    }
+
+    .question{margin-bottom: 20px}
+    .q-text{
+      font-size: 1.1rem; font-weight: 600; color: #e6f7ff;
+      margin-bottom: 16px; line-height: 1.5;
+      background: linear-gradient(90deg, rgba(0,255,213,0.08), rgba(0,102,255,0.04));
+      padding: 14px 16px; border-radius: 10px;
+      border-left: 3px solid #00ffd5;
+    }
+
+    .options{display: grid; gap: 12px}
+    .option{
+      display: flex; gap: 14px; align-items: flex-start;
+      padding: 14px 16px; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(0,150,255,0.04), rgba(0,200,255,0.02));
+      border: 1.5px solid rgba(0,200,255,0.1);
+      cursor: pointer; transition: all .2s ease;
+      position: relative; overflow: hidden;
+    }
+    .option::before{
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(0,255,213,0.05));
+      opacity: 0; transition: opacity .2s;
+    }
+    .option:hover{
+      transform: translateX(6px) translateY(-4px);
+      background: linear-gradient(135deg, rgba(0,200,255,0.1), rgba(0,150,255,0.06));
+      border-color: rgba(0,255,213,0.2);
+      box-shadow: 0 12px 32px rgba(0,102,255,0.15);
+    }
+    .option:hover::before{ opacity: 1 }
+
+    .option .dot{
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2.5px solid rgba(0,200,255,0.3);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px;
+      transition: all .2s ease;
+      box-shadow: 0 0 12px rgba(0,200,255,0);
+    }
+    .option .label{
+      font-weight: 600; color: #d4e6f7; flex: 1;
+      font-size: 0.95rem; line-height: 1.4;
+    }
+
+    .option.selected{
+      background: linear-gradient(135deg, rgba(0,255,213,0.15), rgba(0,102,255,0.12));
+      border-color: rgba(0,255,213,0.35);
+      box-shadow: 0 0 20px rgba(0,255,213,0.2), 0 8px 24px rgba(0,102,255,0.12);
+    }
+    .option.selected .dot{
+      background: linear-gradient(135deg, #00ffd5, #0099ff);
+      border-color: transparent;
+      box-shadow: 0 0 16px rgba(0,255,213,0.5);
+      animation: pulse-dot .6s ease infinite;
+    }
+
+    @keyframes pulse-dot{
+      0%, 100% { transform: scale(1) }
+      50% { transform: scale(1.15) }
+    }
+
+    .quiz-actions{
+      display: flex; gap: 12px; justify-content: space-between;
+      margin-top: 24px; padding-top: 16px;
+      border-top: 1px solid rgba(0,200,255,0.08);
+    }
+    .btn{
+      padding: 12px 20px; border-radius: 10px; border: none;
+      cursor: pointer; font-weight: 700; font-size: 0.95rem;
+      transition: all .2s ease; letter-spacing: 0.5px;
+    }
+    .btn:disabled{ opacity: 0.4; cursor: not-allowed }
+
+    .btn.ghost{
+      background: rgba(150,180,200,0.08); color: #9aa8bf;
+      border: 1px solid rgba(150,180,200,0.12);
+    }
+    .btn.ghost:hover:not(:disabled){
+      background: rgba(150,180,200,0.15); color: #c0d4e8;
+      transform: translateY(-2px);
+    }
+
+    .btn.primary{
+      background: linear-gradient(135deg, #00ffd5 0%, #0099ff 100%);
+      color: #020617; font-weight: 800;
+      box-shadow: 0 8px 20px rgba(0,255,213,0.25);
+    }
+    .btn.primary:hover:not(:disabled){
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,255,213,0.35);
+    }
+
+    .result{
+      text-align: center; padding: 32px 24px;
+      background: linear-gradient(135deg, rgba(0,255,213,0.04), rgba(0,102,255,0.03));
+      border-radius: 12px; border: 1px solid rgba(0,200,255,0.1);
+    }
+    .score-big{
+      font-size: 4rem; font-family: 'Orbitron', sans-serif;
+      color: #00ffd5; font-weight: 900; letter-spacing: 2px;
+      text-shadow: 0 0 20px rgba(0,255,213,0.4);
+      margin: 0;
+    }
+    .score-sub{
+      color: #9aa8bf; margin-top: 12px; font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Confetti */
+    .confetti-piece{
+      position: fixed; z-index: 12000;
+      width: 8px; height: 8px; border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* Creator badge */
+    .creator-badge{
+      position: fixed; bottom: 20px; right: 20px; z-index: 9998;
+      background: linear-gradient(135deg, rgba(0,255,213,0.1), rgba(0,102,255,0.08));
+      border: 1px solid rgba(0,200,255,0.2);
+      border-radius: 50px; padding: 8px 14px;
+      font-size: 0.75rem; font-weight: 700;
+      color: #00ffd5; letter-spacing: 0.8px;
+      display: flex; align-items: center; gap: 6px;
+      transition: all .3s ease;
+      box-shadow: 0 4px 16px rgba(0,255,213,0.15);
+    }
+    .creator-badge:hover{
+      background: linear-gradient(135deg, rgba(0,255,213,0.15), rgba(0,102,255,0.12));
+      border-color: rgba(0,255,213,0.35);
+      box-shadow: 0 8px 24px rgba(0,255,213,0.25);
+      transform: translateY(-4px);
+    }
+    .creator-badge::before{
+      content: '◆'; font-size: 0.6rem;
+    }
+
+    @media(max-width: 768px){
+      .quiz-card{ max-width: 95vw }
+      .quiz-header{ padding: 16px 20px }
+      .quiz-hero{ height: 120px }
+      .score-big{ font-size: 2.8rem }
+      .option{ padding: 12px 14px }
+      .creator-badge{ bottom: 16px; right: 16px; font-size: 0.7rem; padding: 6px 12px }
+    }
+
+    /* ================== SPLASH SCREEN ================== */
+    .splash-screen{
+      position: fixed; inset: 0; z-index: 99999;
+      background: linear-gradient(135deg, #020617 0%, #0a0e1a 50%, #020617 100%);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 1; transition: opacity .8s ease;
+    }
+    .splash-screen.hidden{
+      opacity: 0; pointer-events: none;
+    }
+
+    .splash-content{
+      text-align: center; position: relative;
+    }
+
+    /* Orbes animadas */
+    .splash-orb{
+      position: absolute; border-radius: 50%;
+      animation: float-orb 4s ease-in-out infinite;
+    }
+    .orb-1{
+      width: 120px; height: 120px;
+      background: radial-gradient(circle at 30% 30%, rgba(0,255,213,0.6), rgba(0,255,213,0.1));
+      top: -40px; left: -60px;
+      animation-delay: 0s;
+    }
+    .orb-2{
+      width: 80px; height: 80px;
+      background: radial-gradient(circle at 30% 30%, rgba(0,102,255,0.5), rgba(0,102,255,0.08));
+      bottom: -30px; right: -50px;
+      animation-delay: 1s;
+    }
+    .orb-3{
+      width: 60px; height: 60px;
+      background: radial-gradient(circle at 30% 30%, rgba(102,0,255,0.4), rgba(102,0,255,0.05));
+      top: 50%; right: -40px;
+      animation-delay: 2s;
+    }
+
+    @keyframes float-orb{
+      0%, 100% { transform: translate(0, 0) scale(1) }
+      25% { transform: translate(20px, -30px) scale(1.1) }
+      50% { transform: translate(-15px, 20px) scale(0.95) }
+      75% { transform: translate(30px, 10px) scale(1.05) }
+    }
+
+    /* Líneas de código animadas */
+    .splash-lines{
+      position: relative; height: 200px; width: 300px;
+      margin: 0 auto 40px;
+    }
+    .code-line{
+      position: absolute; font-family: 'Courier New', monospace;
+      font-size: 0.8rem; color: #00ffd5; opacity: 0;
+      white-space: nowrap; letter-spacing: 2px;
+    }
+    .code-line:nth-child(1){ top: 20px; left: 0; animation: slide-in 1s ease forwards; animation-delay: 0.2s }
+    .code-line:nth-child(2){ top: 60px; right: 0; animation: slide-in 1s ease forwards; animation-delay: 0.5s }
+    .code-line:nth-child(3){ top: 100px; left: 0; animation: slide-in 1s ease forwards; animation-delay: 0.8s }
+    .code-line:nth-child(4){ top: 140px; right: 0; animation: slide-in 1s ease forwards; animation-delay: 1.1s }
+
+    @keyframes slide-in{
+      from{ opacity: 0; transform: translateX(-100px) }
+      to{ opacity: 0.7; transform: translateX(0) }
+    }
+
+    /* Barra de progreso */
+    .splash-progress{
+      position: relative; width: 200px; height: 4px;
+      background: rgba(0,200,255,0.1); border-radius: 2px;
+      margin: 30px auto; overflow: hidden;
+      border: 1px solid rgba(0,200,255,0.2);
+    }
+    .progress-bar{
+      height: 100%; background: linear-gradient(90deg, #00ffd5, #0099ff, #6600ff);
+      border-radius: 2px; animation: load-bar 2.5s ease-in-out infinite;
+      box-shadow: 0 0 10px rgba(0,255,213,0.8);
+    }
+
+    @keyframes load-bar{
+      0%{ width: 0% }
+      50%{ width: 100% }
+      100%{ width: 100% }
+    }
+
+    /* Texto de carga */
+    .splash-text{
+      font-family: 'Orbitron', sans-serif;
+      color: #00ffd5; font-size: 1.2rem;
+      letter-spacing: 1.5px; margin-top: 20px;
+      animation: pulse-text 1.5s ease-in-out infinite;
+    }
+    .splash-subtext{
+      font-family: 'Inter', sans-serif;
+      color: #9aa8bf; font-size: 0.85rem;
+      margin-top: 8px; letter-spacing: 0.5px;
+    }
+
+    @keyframes pulse-text{
+      0%, 100%{ opacity: 0.7 }
+      50%{ opacity: 1 }
+    }
+
+    /* Puntos animados */
+    .loading-dots{
+      display: inline-block; margin-left: 4px;
+    }
+    .dot{
+      display: inline-block; width: 6px; height: 6px;
+      border-radius: 50%; background: #00ffd5;
+      margin: 0 3px; animation: bounce-dot 1.4s infinite;
+    }
+    .dot:nth-child(1){ animation-delay: 0s }
+    .dot:nth-child(2){ animation-delay: 0.2s }
+    .dot:nth-child(3){ animation-delay: 0.4s }
+
+    @keyframes bounce-dot{
+      0%, 80%, 100%{ transform: translateY(0); opacity: 0.5 }
+      40%{ transform: translateY(-10px); opacity: 1 }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================== SPLASH SCREEN ================== -->
+  <div class="splash-screen" id="splashScreen">
+    <div class="splash-content">
+      <!-- Orbes flotantes -->
+      <div class="splash-orb orb-1"></div>
+      <div class="splash-orb orb-2"></div>
+      <div class="splash-orb orb-3"></div>
+
+      <!-- Líneas de código -->
+      <div class="splash-lines">
+        <div class="code-line">// Inicializando...</div>
+        <div class="code-line">const mateo = new Page();</div>
+        <div class="code-line">mateo.cargar();</div>
+        <div class="code-line">▶ Ejecutando animaciones...</div>
+      </div>
+
+      <!-- Barra de progreso -->
+      <div class="splash-progress">
+        <div class="progress-bar"></div>
+      </div>
+
+      <!-- Texto -->
+      <div class="splash-text">
+        CARGANDO PÁGINA
+        <span class="loading-dots">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </span>
+      </div>
+      <div class="splash-subtext">de Mateo 7÷1</div>
+    </div>
+  </div>
+
+  <!-- QUIZ BUTTON + MODAL (agregado) -->
+  <button class="quiz-btn" id="openQuiz" aria-label="Abrir quiz" title="Quiz: Desafío humano">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+      <circle cx="12" cy="12" r="10" fill="white" fill-opacity="0.06"/>
+      <path d="M8 11c.5-1.5 2-2 4-2s3.5.5 4 2" stroke="#fff" stroke-opacity="0.9" stroke-width="1.2" stroke-linecap="round"/>
+      <rect x="7" y="14" width="3" height="2" rx="0.4" fill="#fff" fill-opacity="0.9"/>
+      <rect x="14" y="14" width="3" height="2" rx="0.4" fill="#fff" fill-opacity="0.9"/>
+    </svg>
+  </button>
+
+  <div class="quiz-overlay" id="quizOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="quiz-card" role="document">
+      <div class="quiz-hero" id="quizHero"></div>
+      <div class="quiz-header">
+        <div class="quiz-header-content">
+          <h2>Desafío: Nacimiento Humano</h2>
+          <p>15 preguntas • Puntuación: 0.0 a 5.0</p>
+        </div>
+        <button class="quiz-close" id="closeQuiz" aria-label="Cerrar quiz">✕</button>
+      </div>
+
+      <div class="quiz-body" id="quizBody">
+        <div class="progress" aria-hidden>
+          <i id="quizProgress"></i>
+          <div class="percent" id="quizPercent">0%</div>
+        </div>
+
+        <div class="question" id="questionArea">
+          <!-- Pregunta generada por JS -->
+        </div>
+
+        <div class="quiz-actions">
+          <button class="btn ghost" id="prevBtn">Anterior</button>
+          <button class="btn primary" id="nextBtn">Siguiente</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================== HERO ================== -->
+  <div class="hero">
+    <div>
+      <h1>EL ORIGEN DEL HUMANO</h1>
+      <p>
+        La tecnología no comenzó con circuitos.
+        Comenzó con fuego, piedra y la necesidad de sobrevivir.
+      </p>
+    </div>
+    <div class="scroll">⬇ Explora la historia</div>
+  </div>
+
+  <!-- ================== NACIMIENTO ================== -->
+  <section class="reveal">
+    <div class="story">
+      <div>
+        <h2>El nacimiento de la humanidad</h2>
+        <p>
+          Los primeros humanos no tenían ciudades ni máquinas. Tenían frío, hambre y enfrentaban depredadores.
+          La tecnología nació como una respuesta directa al entorno. Pensar, crear y adaptarse
+          fue lo que nos separó del resto de las especies.
+        </p>
+      </div>
+      <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee" alt="Humanos primitivos" />
+    </div>
+  </section>
+
+  <!-- ================== FUEGO ================== -->
+  <section class="reveal">
+    <h2>El fuego: la clave de la vida</h2>
+    <p>
+      El fuego cambió todo. Permitió cocinar alimentos, ahuyentar animales,
+      soportar climas extremos y extender la actividad humana durante la noche.
+      Fue la primera gran revolución tecnológica.
+    </p>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Calor</h3>
+        <p>Protección contra el frío y supervivencia en ambientes hostiles.</p>
+      </div>
+      <div class="card">
+        <h3>Comida</h3>
+        <p>Cocinar aumentó la energía disponible y el desarrollo cerebral.</p>
+      </div>
+      <div class="card">
+        <h3>Comunidad</h3>
+        <p>El fuego reunió a los humanos y fortaleció la comunicación.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== ARMAS ================== -->
+  <section class="reveal">
+    <h2>Armas y herramientas</h2>
+    <p>
+      La piedra tallada, las lanzas y posteriormente los arcos
+      permitieron cazar mejor y defenderse.
+      Cada herramienta era una extensión del cuerpo humano.
+    </p>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Piedra tallada</h3>
+        <p>El inicio de la ingeniería primitiva.</p>
+      </div>
+      <div class="card">
+        <h3>Lanzas</h3>
+        <p>Caza a distancia, mayor seguridad.</p>
+      </div>
+      <div class="card">
+        <h3>Arcos</h3>
+        <p>Precisión, estrategia y ventaja evolutiva.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== ICE AGE ================== -->
+  <section class="ice reveal">
+    <h2>La era de hielo</h2>
+    <p>
+      Durante la era de hielo, los humanos sobrevivieron gracias a la ropa,
+      refugios, fuego y cooperación.
+      No fue la fuerza, fue la inteligencia colectiva.
+    </p>
+  </section>
+
+  <!-- ================== FINAL ================== -->
+  <footer>
+    Proyecto cinematográfico educativo • Creado por Mateo 7÷1
+  </footer>
+
+  <!-- Creator badge -->
+  <div class="creator-badge" title="Página creada por Mateo 7÷1">Mateo 7÷1</div>
+
+  <!-- ================== JS ================== -->
+  <script>
+    const reveals = document.querySelectorAll('.reveal');
+
+    function onScroll() {
+      const h = window.innerHeight;
+      reveals.forEach(el => {
+        if (el.getBoundingClientRect().top < h - 120) {
+          el.classList.add('active');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', onScroll);
+    onScroll();
+  </script>
+
+  <!-- QUIZ JS (mejorado) -->
+  <script>
+    (function(){
+      const openBtn = document.getElementById('openQuiz');
+      const overlay = document.getElementById('quizOverlay');
+      const closeBtn = document.getElementById('closeQuiz');
+      const qArea = document.getElementById('questionArea');
+      const progressEl = document.getElementById('quizProgress');
+      const percentEl = document.getElementById('quizPercent');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const heroEl = document.getElementById('quizHero');
+
+      const heroImages = [
+        'https://images.unsplash.com/photo-1504198453319-5ce911bafcde?auto=format&fit=crop&w=1600&q=80',
+        'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=80',
+        'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80',
+        'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80'
+      ];
+
+      const questions = [
+        {q:'¿Con qué comenzó realmente la tecnología humana según la página?', opts:['Con circuitos y computadoras','Con fuego, piedra y la necesidad de sobrevivir','Con máquinas modernas'], a:1},
+        {q:'¿Qué NO tenían los primeros humanos?', opts:['Frío y hambre','Ciudades ni máquinas','Depredadores'], a:1},
+        {q:'¿Cuál era la principal función del fuego para los humanos primitivos?', opts:['Solo proporcionar luz','Cocinar alimentos, ahuyentar animales y soportar climas extremos','Crear armas'], a:1},
+        {q:'¿Cuál fue la primera gran revolución tecnológica?', opts:['El descubrimiento del fuego','La invención de la rueda','La agricultura'], a:0},
+        {q:'¿Qué beneficio directo trajo cocinar alimentos?', opts:['Mejorar la visión nocturna','Aumentar la energía disponible y el desarrollo cerebral','Eliminar la necesidad de herramientas'], a:1},
+        {q:'El fuego reunió a los humanos para fortalecer:', opts:['La agricultura','La comunicación','La construcción de ciudades'], a:1},
+        {q:'¿Cuáles fueron las armas y herramientas primitivas mencionadas?', opts:['Guns, explosivos y metales','Piedra tallada, lanzas y arcos','Huesos y maderas'], a:1},
+        {q:'¿Qué permitía la piedra tallada?', opts:['Construir casas grandes','El inicio de la ingeniería primitiva','Crear fuego'], a:1},
+        {q:'¿Cuál era la ventaja principal de las armas a distancia?', opts:['Eran más baratas','Permitían caza a distancia con mayor seguridad','Eran más fáciles de hacer'], a:1},
+        {q:'Según la página, ¿qué era cada herramienta para el humano?', opts:['Un arma de guerra','Una extensión del cuerpo humano','Un artículo de comercio'], a:1},
+        {q:'¿Cuáles fueron las claves para sobrevivir en la era de hielo?', opts:['Únicamente la fuerza física','Ropa, refugios, fuego y cooperación','La inteligencia individual'], a:1},
+        {q:'¿Qué fue más importante que la fuerza en la era de hielo?', opts:['La velocidad','La inteligencia colectiva','La suerte'], a:1},
+        {q:'¿Qué permitió al fuego extender la actividad humana?', opts:['Aumentar la visión nocturna','Permitir actividad durante la noche','Eliminar la necesidad de descanso'], a:1},
+        {q:'¿Cuál de los siguientes fue un reto importante para los primeros humanos?', opts:['La contaminación del aire','Enfrentar depredadores y la escasez de comida','El cambio climático moderno'], a:1},
+        {q:'¿En qué se separó el humano del resto de las especies?', opts:['En su tamaño físico','En pensar, crear y adaptarse','En su capacidad de volar'], a:1}
+      ];
+
+      let idx = 0; const answers = new Array(questions.length).fill(null);
+
+      // Función para mezclar el array de preguntas
+      function shuffleQuestions() {
+        for (let i = questions.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [questions[i], questions[j]] = [questions[j], questions[i]];
+        }
+        answers.fill(null);
+        idx = 0;
+      }
+
+      function openQuiz(){ shuffleQuestions(); overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); render(); document.body.style.overflow='hidden'; }
+      function closeQuiz(){ overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); document.body.style.overflow='auto'; }
+
+      function updateProgress(){
+        const pct = Math.round(((idx+1)/questions.length)*100);
+        progressEl.style.width = pct + '%';
+        if(percentEl) percentEl.textContent = pct + '%';
+      }
+
+      function render(){
+        const q = questions[idx];
+        updateProgress();
+        // hero image for visual mood
+        if(heroEl) heroEl.style.backgroundImage = `url('${heroImages[idx % heroImages.length]}')`;
+
+        qArea.innerHTML = '';
+        const qText = document.createElement('div'); qText.className='q-text'; qText.textContent = `${idx+1}. ${q.q}`;
+        qArea.appendChild(qText);
+
+        const opts = document.createElement('div'); opts.className='options';
+        q.opts.forEach((o,i)=>{
+          const el = document.createElement('div'); el.className='option'; el.tabIndex=0; el.setAttribute('data-i',i);
+          el.innerHTML = `<span class="dot"></span><div class="label"><strong>${['A)','B)','C)'][i]}</strong> &nbsp; ${o}</div>`;
+          if(answers[idx]===i) el.classList.add('selected');
+          el.addEventListener('click', ()=>{ select(i); });
+          el.addEventListener('keypress', (ev)=>{ if(ev.key==='Enter') select(i); });
+          opts.appendChild(el);
+        });
+        qArea.appendChild(opts);
+
+        prevBtn.disabled = idx===0;
+        nextBtn.textContent = (idx===questions.length-1)? 'Terminar' : 'Siguiente';
+      }
+
+      function select(i){ answers[idx]=i; const els = qArea.querySelectorAll('.option'); els.forEach(el=>el.classList.remove('selected')); const sel = qArea.querySelector(`.option[data-i="${i}"]`); if(sel) sel.classList.add('selected'); }
+
+      function prevHandler(){ if(idx>0){ idx--; render(); } }
+      function nextHandler(){ if(answers[idx]===null){ alert('Selecciona una opción antes de continuar.'); return; } if(idx<questions.length-1){ idx++; render(); } else { finish(); } }
+
+      prevBtn.addEventListener('click', prevHandler);
+      nextBtn.addEventListener('click', nextHandler);
+
+      function finish(){
+        let correct = 0; for(let i=0;i<questions.length;i++){ if(answers[i]===questions[i].a) correct++; }
+        const pct = correct / questions.length; // 0..1
+        const decimalScore = Math.round((pct*5)*10)/10; // 0.0 - 5.0 step 0.1
+
+        // Mostrar resultados
+        qArea.innerHTML = `<div class="result">
+          <div class="score-big">${decimalScore} / 5.0</div>
+          <div class="score-sub">Aciertos: ${correct} de ${questions.length} (${Math.round(pct*100)}%)</div>
+          <div style="margin-top:12px;color:#9aa8bf">${decimalScore>=4 ? 'Excelente comprensión.' : (decimalScore>=3 ? 'Buen entendimiento, repasa algunos puntos.' : 'Sigue aprendiendo — vuelve a intentarlo')}</div>
+        </div>`;
+        progressEl.style.width = '100%'; if(percentEl) percentEl.textContent = '100%';
+        prevBtn.style.display = 'none';
+        // show confetti for good scores
+        if(decimalScore>=4) launchConfetti();
+
+        // cambiar comportamiento del botón siguiente
+        nextBtn.textContent = 'Volver a intentar';
+        nextBtn.removeEventListener('click', nextHandler);
+        nextBtn.addEventListener('click', resetHandler);
+      }
+
+      function resetHandler(){ idx = 0; answers.fill(null); prevBtn.style.display='inline-block'; prevBtn.disabled=true; nextBtn.removeEventListener('click', resetHandler); nextBtn.addEventListener('click', nextHandler); render(); }
+
+      // Confetti simple
+      function launchConfetti(){
+        const colors = ['#00ffd5','#0066ff','#ffd580','#ff7ab6','#7bffb8'];
+        const count = 36;
+        for(let i=0;i<count;i++){
+          const el = document.createElement('div'); el.className='confetti-piece';
+          el.style.background = colors[Math.floor(Math.random()*colors.length)];
+          el.style.left = (50 + (Math.random()*60-30)) + '%';
+          el.style.top = '-10%';
+          const rot = Math.random()*360;
+          el.style.transform = `translateY(0) rotate(${rot}deg)`;
+          document.body.appendChild(el);
+          // animate
+          const dx = (Math.random()*140-70);
+          const dy = 120 + Math.random()*280;
+          const dur = 2000 + Math.random()*1200;
+          el.animate([
+            { transform: `translateY(0) rotate(${rot}deg)`, opacity:1 },
+            { transform: `translate(${dx}px, ${dy}px) rotate(${rot+180}deg)`, opacity:0.1 }
+          ], { duration: dur, easing: 'cubic-bezier(.2,.8,.2,1)' });
+          setTimeout(()=>el.remove(), 3200);
+        }
+      }
+
+      // apertura / cierre
+      openBtn.addEventListener('click', openQuiz);
+      closeBtn.addEventListener('click', closeQuiz);
+      overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeQuiz(); });
+
+      // init
+      render();
+    })();
+
+    // ================== SPLASH SCREEN LOGIC ==================
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splashScreen');
+        if (splash) {
+          splash.classList.add('hidden');
+        }
+      }, 7000);
+    });
+  </script>
+
+</body>
+</html>
 
