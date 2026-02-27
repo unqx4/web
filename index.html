@@ -3,892 +3,1286 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Origen Humano | Tecnología & Supervivencia</title>
-
-  <!-- ================== FUENTES ================== -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>Origen Humano — Tecnología & Supervivencia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
   <style>
-    /* ================== RESET ================== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    /* ─── TOKENS ─────────────────────────────────── */
+    :root {
+      --ink:      #0a0704;
+      --paper:    #f5f0e8;
+      --ember:    #c84b11;
+      --gold:     #b8860b;
+      --ash:      #6b5e52;
+      --smoke:    #d4c9b8;
+      --char:     #1e1610;
+      --glow:     rgba(200, 75, 17, 0.35);
+      --ff-title: 'Cinzel', serif;
+      --ff-body:  'Libre Baskerville', serif;
+      --ff-mono:  'Space Mono', monospace;
     }
+
+    /* ─── RESET ──────────────────────────────────── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: #020617;
-      color: #e5e7eb;
+      font-family: var(--ff-body);
+      background: var(--ink);
+      color: var(--paper);
       overflow-x: hidden;
+      cursor: none;
     }
 
-    h1, h2, h3 {
-      font-family: 'Orbitron', sans-serif;
+    /* ─── CUSTOM CURSOR ──────────────────────────── */
+    .cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      background: var(--ember);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99998;
+      transform: translate(-50%, -50%);
+      transition: transform .1s, width .3s, height .3s, opacity .3s;
+      mix-blend-mode: screen;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 40px; height: 40px;
+      border: 1px solid rgba(200,75,17,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99997;
+      transform: translate(-50%, -50%);
+      transition: transform .18s ease-out, width .3s, height .3s, opacity .3s;
+    }
+    body:hover .cursor { opacity: 1; }
+
+    /* ─── GRAIN OVERLAY ──────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 9999;
     }
 
-    /* ================== HERO ================== */
+    /* ─── SPLASH ─────────────────────────────────── */
+    #splash {
+      position: fixed; inset: 0; z-index: 99990;
+      background: var(--ink);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 32px;
+      transition: opacity 1.2s ease, visibility 1.2s ease;
+    }
+    #splash.out { opacity: 0; visibility: hidden; }
+
+    .splash-flame {
+      position: relative; width: 60px; height: 90px;
+    }
+    .flame-part {
+      position: absolute; bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      border-radius: 50% 50% 20% 20% / 60% 60% 30% 30%;
+      animation: flicker 1.4s ease-in-out infinite alternate;
+    }
+    .flame-part.f1 { width:60px; height:90px; background:radial-gradient(ellipse at 50% 70%, #ff6b35, #c84b11); animation-delay:0s; }
+    .flame-part.f2 { width:40px; height:65px; background:radial-gradient(ellipse at 50% 70%, #ffb347, #ff6b35); animation-delay:.2s; }
+    .flame-part.f3 { width:22px; height:40px; background:radial-gradient(ellipse at 50% 70%, #ffe9a0, #ffb347); animation-delay:.4s; }
+
+    @keyframes flicker {
+      0%   { transform: translateX(-50%) scaleX(1) scaleY(1) rotate(-2deg); }
+      100% { transform: translateX(-50%) scaleX(.9) scaleY(1.05) rotate(2deg); }
+    }
+
+    .splash-title {
+      font-family: var(--ff-title);
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      letter-spacing: 8px;
+      color: var(--paper);
+      text-transform: uppercase;
+    }
+    .splash-bar {
+      width: 180px; height: 2px;
+      background: rgba(245,240,232,0.1);
+      position: relative; overflow: hidden;
+    }
+    .splash-bar::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--ember);
+      transform: scaleX(0); transform-origin: left;
+      animation: load-bar 2.8s cubic-bezier(.4,0,.2,1) forwards;
+    }
+    @keyframes load-bar { to { transform: scaleX(1); } }
+
+    .splash-sub {
+      font-family: var(--ff-mono);
+      font-size: .7rem;
+      letter-spacing: 3px;
+      color: var(--ash);
+      text-transform: uppercase;
+    }
+
+    /* ─── NAV ────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      padding: 20px 5%;
+      display: flex; justify-content: space-between; align-items: center;
+      transition: background .5s;
+    }
+    nav.scrolled {
+      background: rgba(10, 7, 4, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(200, 75, 17, 0.15);
+    }
+    .nav-logo {
+      font-family: var(--ff-title);
+      font-size: .85rem;
+      letter-spacing: 4px;
+      color: var(--paper);
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex; gap: 32px; list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--ff-mono);
+      font-size: .7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ash);
+      text-decoration: none;
+      transition: color .3s;
+    }
+    .nav-links a:hover { color: var(--ember); }
+
+    /* ─── HERO ───────────────────────────────────── */
     .hero {
-      height: 100vh;
-      background:
-        linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.95)),
-        url('https://images.unsplash.com/photo-1549880338-65ddcdfd017b');
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 7% 10vh;
       position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 60% 40%, rgba(200,75,17,.18), transparent),
+        radial-gradient(ellipse 40% 40% at 80% 80%, rgba(184,134,11,.08), transparent),
+        #0a0704;
+    }
+
+    /* Animated embers */
+    .ember-field {
+      position: absolute; inset: 0; pointer-events: none;
+    }
+    .ember {
+      position: absolute;
+      width: 3px; height: 3px;
+      background: var(--ember);
+      border-radius: 50%;
+      animation: rise linear infinite;
+      opacity: 0;
+    }
+    @keyframes rise {
+      0%   { transform: translateY(0) translateX(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: .6; }
+      100% { transform: translateY(-100vh) translateX(40px); opacity: 0; }
+    }
+
+    .hero-eyebrow {
+      font-family: var(--ff-mono);
+      font-size: .7rem;
+      letter-spacing: 4px;
+      color: var(--ember);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 40px; height: 1px;
+      background: var(--ember);
+      vertical-align: middle;
+      margin-right: 12px;
     }
 
     .hero h1 {
-      font-size: clamp(3rem, 7vw, 5rem);
-      letter-spacing: 4px;
-      margin-bottom: 20px;
-    }
-
-    .hero p {
-      max-width: 800px;
-      font-size: 1.2rem;
-      opacity: 0.85;
-    }
-
-    .scroll {
-      position: absolute;
-      bottom: 30px;
-      font-size: 0.9rem;
-      opacity: 0.6;
-      animation: float 2s infinite;
-    }
-
-    @keyframes float {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    /* ================== SECTIONS ================== */
-    section {
-      padding: 140px 10%;
+      font-family: var(--ff-title);
+      font-size: clamp(3.5rem, 9vw, 8rem);
+      font-weight: 900;
+      line-height: .95;
+      letter-spacing: -1px;
+      color: var(--paper);
       position: relative;
     }
+    .hero h1 em {
+      font-style: normal;
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--ember);
+    }
 
-    section::after {
+    .hero-sub {
+      margin-top: 28px;
+      max-width: 560px;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--smoke);
+      font-style: italic;
+    }
+
+    .hero-scroll {
+      position: absolute;
+      right: 5%;
+      bottom: 50px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      font-family: var(--ff-mono);
+      font-size: .6rem;
+      letter-spacing: 3px;
+      color: var(--ash);
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+    }
+    .hero-scroll::after {
+      content: '';
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, var(--ember), transparent);
+      animation: line-grow 2s ease-in-out infinite;
+    }
+    @keyframes line-grow {
+      0%, 100% { transform: scaleY(1); opacity: 1; }
+      50% { transform: scaleY(.5); opacity: .3; }
+    }
+
+    /* ─── SECTION BASE ───────────────────────────── */
+    section {
+      padding: 130px 7%;
+      position: relative;
+    }
+    section + section::before {
       content: '';
       position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
+      top: 0; left: 7%; right: 7%;
       height: 1px;
-      background: linear-gradient(90deg, transparent, #38bdf8, transparent);
-      opacity: 0.2;
+      background: linear-gradient(90deg, transparent, var(--ember) 30%, var(--gold) 70%, transparent);
+      opacity: .2;
     }
 
-    h2 {
-      font-size: 2.8rem;
-      margin-bottom: 30px;
-      color: #38bdf8;
-    }
-
-    p {
-      max-width: 900px;
-      line-height: 1.8;
-      font-size: 1.1rem;
-      opacity: 0.9;
-    }
-
-    /* ================== STORY BLOCK ================== */
-    .story {
+    /* ─── SECTION: NACIMIENTO ────────────────────── */
+    .s-birth {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 60px;
+      gap: 80px;
       align-items: center;
     }
+    .s-birth-text {}
+    .section-number {
+      font-family: var(--ff-mono);
+      font-size: .65rem;
+      letter-spacing: 4px;
+      color: var(--ember);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    h2 {
+      font-family: var(--ff-title);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--paper);
+      margin-bottom: 24px;
+    }
+    h2 span { color: var(--ember); }
 
-    .story img {
+    .body-text {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: var(--smoke);
+      max-width: 560px;
+    }
+
+    .img-frame {
+      position: relative;
+    }
+    .img-frame img {
       width: 100%;
-      border-radius: 30px;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      display: block;
+      filter: sepia(40%) contrast(1.1) brightness(.9);
     }
-
-    /* ================== CARDS ================== */
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 40px;
-      margin-top: 60px;
-    }
-
-    .card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 25px;
-      padding: 35px;
-      backdrop-filter: blur(10px);
-      transition: all 0.5s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-15px) scale(1.03);
-      box-shadow: 0 40px 100px rgba(0,0,0,0.7);
-    }
-
-    .card h3 {
-      margin-bottom: 15px;
-      color: #facc15;
-    }
-
-    /* ================== ICE AGE ================== */
-    .ice {
-      background:
-        linear-gradient(180deg, rgba(2,6,23,0.85), rgba(2,6,23,1)),
-        url('https://images.unsplash.com/photo-1483729558449-99ef09a8c325');
-      background-size: cover;
-      background-position: center;
-    }
-
-    /* ================== FINAL ================== */
-    footer {
-      padding: 80px 10%;
-      text-align: center;
-      font-size: 0.9rem;
-      opacity: 0.6;
-    }
-
-    /* ================== REVEAL ================== */
-    .reveal {
-      opacity: 0;
-      transform: translateY(60px);
-      transition: all 1s ease;
-    }
-
-    .reveal.active {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    @media(max-width: 900px) {
-      .story {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-  <!-- ================== QUIZ CSS (Mejorado) ================== -->
-  <style>
-    /* Floating quiz button - animado y atractivo */
-    .quiz-btn{
-      position:fixed; right:24px; top:24px; width:64px; height:64px; border-radius:50%; z-index:9999;
-      background:linear-gradient(135deg, #00ffd5 0%, #0099ff 50%, #6600ff 100%);
-      display:flex; align-items:center; justify-content:center;
-      box-shadow: 0 0 30px rgba(0,255,213,0.3), 0 12px 40px rgba(0,102,255,0.25);
-      cursor:pointer; border:none;
-      transition: all .3s cubic-bezier(.34,1.56,.64,1); font-size:0;
-      animation: float-pulse 3s ease-in-out infinite;
-    }
-    .quiz-btn:hover{
-      transform: scale(1.15) translateY(-6px);
-      box-shadow: 0 0 50px rgba(0,255,213,0.5), 0 20px 60px rgba(0,102,255,0.4);
-    }
-    @keyframes float-pulse{
-      0%,100% { transform: translateY(0) }
-      50% { transform: translateY(-8px) }
-    }
-    .quiz-btn svg{width:32px; height:32px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));}
-
-    /* Modal overlay */
-    .quiz-overlay{
-      position:fixed; inset:0; background: linear-gradient(135deg, rgba(2,6,23,0.85), rgba(6,10,25,0.92));
-      display:none; align-items:center; justify-content:center; z-index:10000; padding:16px;
-      backdrop-filter: blur(8px);
-    }
-    .quiz-overlay.open{display:flex; animation: fadeIn .4s ease}
-
-    @keyframes fadeIn{ from{ opacity:0 } to{ opacity:1 } }
-
-    .quiz-card{
-      width:100%; max-width:1000px; 
-      background: linear-gradient(180deg, rgba(8,12,20,0.96) 0%, rgba(4,8,16,0.98) 100%);
-      border-radius: 16px; padding:0; overflow:hidden;
-      box-shadow: 0 0 80px rgba(0,255,213,0.15), 0 20px 100px rgba(0,0,0,0.8);
-      border: 1px solid rgba(0,200,255,0.12);
-      transform: scale(0.95) translateY(20px); opacity:0;
-      transition: all .5s cubic-bezier(.2,.9,.2,1);
-    }
-    .quiz-overlay.open .quiz-card{
-      transform: scale(1) translateY(0);
-      opacity: 1;
-    }
-
-    .quiz-hero{
-      height: 160px; background-size: cover; background-position: center;
-      position: relative; overflow: hidden;
-    }
-    .quiz-hero::before{
+    .img-frame::before {
       content: '';
-      position: absolute; inset:0;
-      background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%);
+      position: absolute;
+      inset: -12px -12px auto auto;
+      width: 60%;
+      height: 60%;
+      border-top: 2px solid var(--ember);
+      border-right: 2px solid var(--ember);
+      opacity: .4;
+      z-index: 1;
+    }
+    .img-frame::after {
+      content: '';
+      position: absolute;
+      inset: auto auto -12px -12px;
+      width: 60%;
+      height: 60%;
+      border-bottom: 2px solid var(--gold);
+      border-left: 2px solid var(--gold);
+      opacity: .3;
+      z-index: 1;
     }
 
-    .quiz-header{
-      padding: 20px 28px; display: flex; align-items: center;
-      justify-content: space-between; gap: 16px; position: relative; z-index: 1;
-      border-bottom: 1px solid rgba(0,200,255,0.08);
+    /* ─── SECTION: FUEGO ─────────────────────────── */
+    .s-fire {
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 90%, rgba(200,75,17,.12), transparent),
+        radial-gradient(ellipse 40% 30% at 20% 50%, rgba(184,134,11,.06), transparent);
     }
-    .quiz-header-content h2{
-      margin: 0; font-family: 'Orbitron', sans-serif;
-      font-size: 1.3rem; color: #00ffd5; font-weight: 700;
-      letter-spacing: 1px;
+    .fire-intro {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 60px;
+      align-items: end;
+      margin-bottom: 80px;
     }
-    .quiz-header-content p{
-      margin: 4px 0 0 0; font-size: 0.85rem; color: #9aa8bf;
-    }
-    .quiz-close{
-      background: linear-gradient(135deg, rgba(255,100,150,0.12), rgba(150,50,200,0.08));
-      border: 1px solid rgba(255,100,150,0.2); color: #ff6a9d; cursor: pointer;
-      width: 40px; height: 40px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem; font-weight: 300; transition: all .2s;
-    }
-    .quiz-close:hover{
-      background: rgba(255,100,150,0.2); transform: rotate(90deg);
-    }
-
-    .quiz-body{
-      padding: 20px 28px;
+    .fire-intro .big-num {
+      font-family: var(--ff-title);
+      font-size: clamp(6rem, 15vw, 12rem);
+      font-weight: 900;
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(200,75,17,.3);
+      user-select: none;
     }
 
-    .progress{
-      height: 12px; background: rgba(255,255,255,0.03);
-      border-radius: 999px; overflow: hidden; position: relative;
-      margin-bottom: 20px; border: 1px solid rgba(0,200,255,0.08);
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
     }
-    .progress > i{
-      display: block; height: 100%;
-      background: linear-gradient(90deg, #00ffd5 0%, #0099ff 50%, #6600ff 100%);
-      width: 0%; transition: width .5s cubic-bezier(.2,.8,.2,1);
-      box-shadow: 0 0 20px rgba(0,255,213,0.6);
+    .fire-card {
+      padding: 40px 32px;
+      border: 1px solid rgba(245,240,232,.06);
+      position: relative;
+      overflow: hidden;
+      transition: background .4s;
     }
-    .progress .percent{
-      position: absolute; right: 12px; top: 50%;
-      transform: translateY(-50%); font-size: 0.8rem;
-      color: #00ffd5; font-weight: 700; z-index: 2;
-    }
-
-    .question{margin-bottom: 20px}
-    .q-text{
-      font-size: 1.1rem; font-weight: 600; color: #e6f7ff;
-      margin-bottom: 16px; line-height: 1.5;
-      background: linear-gradient(90deg, rgba(0,255,213,0.08), rgba(0,102,255,0.04));
-      padding: 14px 16px; border-radius: 10px;
-      border-left: 3px solid #00ffd5;
-    }
-
-    .options{display: grid; gap: 12px}
-    .option{
-      display: flex; gap: 14px; align-items: flex-start;
-      padding: 14px 16px; border-radius: 12px;
-      background: linear-gradient(135deg, rgba(0,150,255,0.04), rgba(0,200,255,0.02));
-      border: 1.5px solid rgba(0,200,255,0.1);
-      cursor: pointer; transition: all .2s ease;
-      position: relative; overflow: hidden;
-    }
-    .option::before{
+    .fire-card::before {
       content: '';
       position: absolute; inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(0,255,213,0.05));
-      opacity: 0; transition: opacity .2s;
+      background: linear-gradient(135deg, rgba(200,75,17,.08), transparent);
+      opacity: 0; transition: opacity .4s;
     }
-    .option:hover{
-      transform: translateX(6px) translateY(-4px);
-      background: linear-gradient(135deg, rgba(0,200,255,0.1), rgba(0,150,255,0.06));
-      border-color: rgba(0,255,213,0.2);
-      box-shadow: 0 12px 32px rgba(0,102,255,0.15);
-    }
-    .option:hover::before{ opacity: 1 }
+    .fire-card:hover::before { opacity: 1; }
+    .fire-card:hover { background: rgba(200,75,17,.04); }
 
-    .option .dot{
-      width: 20px; height: 20px; border-radius: 50%;
-      border: 2.5px solid rgba(0,200,255,0.3);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; margin-top: 2px;
-      transition: all .2s ease;
-      box-shadow: 0 0 12px rgba(0,200,255,0);
+    .fire-card-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      display: block;
     }
-    .option .label{
-      font-weight: 600; color: #d4e6f7; flex: 1;
-      font-size: 0.95rem; line-height: 1.4;
+    .fire-card h3 {
+      font-family: var(--ff-title);
+      font-size: 1.1rem;
+      color: var(--paper);
+      margin-bottom: 12px;
     }
-
-    .option.selected{
-      background: linear-gradient(135deg, rgba(0,255,213,0.15), rgba(0,102,255,0.12));
-      border-color: rgba(0,255,213,0.35);
-      box-shadow: 0 0 20px rgba(0,255,213,0.2), 0 8px 24px rgba(0,102,255,0.12);
-    }
-    .option.selected .dot{
-      background: linear-gradient(135deg, #00ffd5, #0099ff);
-      border-color: transparent;
-      box-shadow: 0 0 16px rgba(0,255,213,0.5);
-      animation: pulse-dot .6s ease infinite;
+    .fire-card p {
+      font-size: .9rem;
+      line-height: 1.7;
+      color: var(--ash);
     }
 
-    @keyframes pulse-dot{
-      0%, 100% { transform: scale(1) }
-      50% { transform: scale(1.15) }
+    /* ─── SECTION: HERRAMIENTAS ──────────────────── */
+    .tools-list {
+      display: grid;
+      gap: 0;
+      margin-top: 60px;
+    }
+    .tool-item {
+      display: grid;
+      grid-template-columns: 80px 1fr 1fr;
+      align-items: center;
+      gap: 40px;
+      padding: 28px 0;
+      border-bottom: 1px solid rgba(245,240,232,.07);
+      transition: padding-left .3s;
+    }
+    .tool-item:hover { padding-left: 12px; }
+    .tool-num {
+      font-family: var(--ff-mono);
+      font-size: .7rem;
+      color: var(--ember);
+      letter-spacing: 2px;
+    }
+    .tool-name {
+      font-family: var(--ff-title);
+      font-size: 1.3rem;
+      color: var(--paper);
+    }
+    .tool-desc {
+      font-size: .9rem;
+      line-height: 1.7;
+      color: var(--ash);
     }
 
-    .quiz-actions{
-      display: flex; gap: 12px; justify-content: space-between;
-      margin-top: 24px; padding-top: 16px;
-      border-top: 1px solid rgba(0,200,255,0.08);
+    /* ─── SECTION: ERA DE HIELO ──────────────────── */
+    .s-ice {
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background:
+        linear-gradient(to bottom, transparent, rgba(0,20,40,.5) 60%, rgba(0,10,20,.8)),
+        radial-gradient(ellipse 80% 60% at 50% 30%, rgba(100,180,220,.06), transparent),
+        #0a0704;
+      position: relative;
+      overflow: hidden;
     }
-    .btn{
-      padding: 12px 20px; border-radius: 10px; border: none;
-      cursor: pointer; font-weight: 700; font-size: 0.95rem;
-      transition: all .2s ease; letter-spacing: 0.5px;
+    .ice-quote {
+      max-width: 800px;
+      position: relative;
     }
-    .btn:disabled{ opacity: 0.4; cursor: not-allowed }
-
-    .btn.ghost{
-      background: rgba(150,180,200,0.08); color: #9aa8bf;
-      border: 1px solid rgba(150,180,200,0.12);
+    .ice-quote blockquote {
+      font-family: var(--ff-title);
+      font-size: clamp(1.8rem, 4vw, 3.5rem);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--paper);
+      font-style: italic;
     }
-    .btn.ghost:hover:not(:disabled){
-      background: rgba(150,180,200,0.15); color: #c0d4e8;
-      transform: translateY(-2px);
+    .ice-quote blockquote::before {
+      content: '"';
+      display: block;
+      font-size: 8rem;
+      line-height: .7;
+      color: rgba(200,75,17,.25);
+      font-family: var(--ff-title);
+      margin-bottom: 16px;
     }
-
-    .btn.primary{
-      background: linear-gradient(135deg, #00ffd5 0%, #0099ff 100%);
-      color: #020617; font-weight: 800;
-      box-shadow: 0 8px 20px rgba(0,255,213,0.25);
-    }
-    .btn.primary:hover:not(:disabled){
-      transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(0,255,213,0.35);
-    }
-
-    .result{
-      text-align: center; padding: 32px 24px;
-      background: linear-gradient(135deg, rgba(0,255,213,0.04), rgba(0,102,255,0.03));
-      border-radius: 12px; border: 1px solid rgba(0,200,255,0.1);
-    }
-    .score-big{
-      font-size: 4rem; font-family: 'Orbitron', sans-serif;
-      color: #00ffd5; font-weight: 900; letter-spacing: 2px;
-      text-shadow: 0 0 20px rgba(0,255,213,0.4);
-      margin: 0;
-    }
-    .score-sub{
-      color: #9aa8bf; margin-top: 12px; font-size: 0.95rem;
-      line-height: 1.6;
+    .ice-quote cite {
+      display: block;
+      margin-top: 28px;
+      font-family: var(--ff-mono);
+      font-size: .7rem;
+      letter-spacing: 3px;
+      color: var(--ember);
+      text-transform: uppercase;
     }
 
-    /* Confetti */
-    .confetti-piece{
-      position: fixed; z-index: 12000;
-      width: 8px; height: 8px; border-radius: 50%;
-      pointer-events: none;
+    .ice-stats {
+      display: flex; gap: 60px;
+      margin-top: 60px;
+      flex-wrap: wrap;
+    }
+    .ice-stat {}
+    .ice-stat-num {
+      font-family: var(--ff-title);
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--ember);
+    }
+    .ice-stat-label {
+      font-family: var(--ff-mono);
+      font-size: .65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-top: 4px;
     }
 
-    /* Creator badge */
-    .creator-badge{
-      position: fixed; bottom: 20px; right: 20px; z-index: 9998;
-      background: linear-gradient(135deg, rgba(0,255,213,0.1), rgba(0,102,255,0.08));
-      border: 1px solid rgba(0,200,255,0.2);
-      border-radius: 50px; padding: 8px 14px;
-      font-size: 0.75rem; font-weight: 700;
-      color: #00ffd5; letter-spacing: 0.8px;
-      display: flex; align-items: center; gap: 6px;
-      transition: all .3s ease;
-      box-shadow: 0 4px 16px rgba(0,255,213,0.15);
+    /* Snowflakes */
+    .snowfield {
+      position: absolute; inset: 0; pointer-events: none; overflow: hidden;
     }
-    .creator-badge:hover{
-      background: linear-gradient(135deg, rgba(0,255,213,0.15), rgba(0,102,255,0.12));
-      border-color: rgba(0,255,213,0.35);
-      box-shadow: 0 8px 24px rgba(0,255,213,0.25);
-      transform: translateY(-4px);
+    .snowflake {
+      position: absolute; top: -10px;
+      width: 4px; height: 4px;
+      background: rgba(200,230,255,.5);
+      border-radius: 50%;
+      animation: snow-fall linear infinite;
+      opacity: 0;
     }
-    .creator-badge::before{
-      content: '◆'; font-size: 0.6rem;
+    @keyframes snow-fall {
+      0%   { transform: translateY(-10px) translateX(0); opacity: 0; }
+      10%  { opacity: .7; }
+      90%  { opacity: .3; }
+      100% { transform: translateY(100vh) translateX(30px); opacity: 0; }
     }
 
-    @media(max-width: 768px){
-      .quiz-card{ max-width: 95vw }
-      .quiz-header{ padding: 16px 20px }
-      .quiz-hero{ height: 120px }
-      .score-big{ font-size: 2.8rem }
-      .option{ padding: 12px 14px }
-      .creator-badge{ bottom: 16px; right: 16px; font-size: 0.7rem; padding: 6px 12px }
+    /* ─── TIMELINE ───────────────────────────────── */
+    .s-timeline h2 { margin-bottom: 60px; }
+    .timeline {
+      position: relative;
+      padding-left: 32px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--ember), var(--gold), rgba(200,75,17,.1));
+    }
+    .tl-item {
+      position: relative;
+      padding: 0 0 60px 40px;
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .tl-item.visible { opacity: 1; transform: translateX(0); }
+    .tl-dot {
+      position: absolute;
+      left: -8px; top: 6px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--ember);
+      box-shadow: 0 0 20px var(--glow);
+    }
+    .tl-era {
+      font-family: var(--ff-mono);
+      font-size: .65rem;
+      letter-spacing: 3px;
+      color: var(--ember);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .tl-title {
+      font-family: var(--ff-title);
+      font-size: 1.4rem;
+      color: var(--paper);
+      margin-bottom: 10px;
+    }
+    .tl-body {
+      font-size: .95rem;
+      line-height: 1.8;
+      color: var(--ash);
+      max-width: 520px;
     }
 
-    /* ================== SPLASH SCREEN ================== */
-    .splash-screen{
-      position: fixed; inset: 0; z-index: 99999;
-      background: linear-gradient(135deg, #020617 0%, #0a0e1a 50%, #020617 100%);
-      display: flex; align-items: center; justify-content: center;
-      opacity: 1; transition: opacity .8s ease;
+    /* ─── REVEAL ─────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity .9s ease, transform .9s ease;
     }
-    .splash-screen.hidden{
-      opacity: 0; pointer-events: none; visibility: hidden;
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ─── FOOTER ─────────────────────────────────── */
+    footer {
+      padding: 60px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(200,75,17,.15);
+    }
+    .footer-brand {
+      font-family: var(--ff-title);
+      font-size: .8rem;
+      letter-spacing: 4px;
+      color: var(--ash);
+      text-transform: uppercase;
+    }
+    .footer-credit {
+      font-family: var(--ff-mono);
+      font-size: .65rem;
+      letter-spacing: 2px;
+      color: var(--ember);
     }
 
-    .splash-content{
-      text-align: center; position: relative;
-    }
-
-    /* Orbes animadas */
-    .splash-orb{
-      position: absolute; border-radius: 50%;
-      animation: float-orb 4s ease-in-out infinite;
-    }
-    .orb-1{
-      width: 120px; height: 120px;
-      background: radial-gradient(circle at 30% 30%, rgba(0,255,213,0.6), rgba(0,255,213,0.1));
-      top: -40px; left: -60px;
-      animation-delay: 0s;
-    }
-    .orb-2{
-      width: 80px; height: 80px;
-      background: radial-gradient(circle at 30% 30%, rgba(0,102,255,0.5), rgba(0,102,255,0.08));
-      bottom: -30px; right: -50px;
-      animation-delay: 1s;
-    }
-    .orb-3{
+    /* ─── QUIZ BUTTON ────────────────────────────── */
+    .quiz-fab {
+      position: fixed;
+      bottom: 32px; right: 32px;
+      z-index: 9990;
       width: 60px; height: 60px;
-      background: radial-gradient(circle at 30% 30%, rgba(102,0,255,0.4), rgba(102,0,255,0.05));
-      top: 50%; right: -40px;
-      animation-delay: 2s;
+      border-radius: 50%;
+      border: none;
+      background: var(--ember);
+      color: var(--paper);
+      cursor: none;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 32px rgba(200,75,17,.4);
+      transition: transform .3s, box-shadow .3s;
+      animation: fab-pulse 3s ease-in-out infinite;
+    }
+    @keyframes fab-pulse {
+      0%, 100% { box-shadow: 0 8px 32px rgba(200,75,17,.4); }
+      50% { box-shadow: 0 8px 48px rgba(200,75,17,.7); }
+    }
+    .quiz-fab:hover {
+      transform: scale(1.12) translateY(-4px);
+      box-shadow: 0 16px 48px rgba(200,75,17,.6);
+    }
+    .quiz-fab svg { width: 26px; height: 26px; }
+
+    /* Tooltip */
+    .quiz-fab::before {
+      content: 'Quiz';
+      position: absolute;
+      right: 72px;
+      font-family: var(--ff-mono);
+      font-size: .65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: var(--char);
+      color: var(--paper);
+      padding: 6px 10px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .quiz-fab:hover::before { opacity: 1; }
+
+    /* ─── QUIZ OVERLAY ───────────────────────────── */
+    .quiz-overlay {
+      position: fixed; inset: 0; z-index: 99000;
+      background: rgba(10,7,4,.9);
+      backdrop-filter: blur(10px);
+      display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .quiz-overlay.open { display: flex; animation: fade-in .4s ease; }
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+    .quiz-panel {
+      width: 100%; max-width: 680px;
+      background: var(--char);
+      border: 1px solid rgba(200,75,17,.2);
+      box-shadow: 0 40px 120px rgba(0,0,0,.8), 0 0 0 1px rgba(245,240,232,.05);
+      animation: panel-in .5s cubic-bezier(.2,.9,.2,1);
+    }
+    @keyframes panel-in {
+      from { transform: translateY(40px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
     }
 
-    @keyframes float-orb{
-      0%, 100% { transform: translate(0, 0) scale(1) }
-      25% { transform: translate(20px, -30px) scale(1.1) }
-      50% { transform: translate(-15px, 20px) scale(0.95) }
-      75% { transform: translate(30px, 10px) scale(1.05) }
+    .quiz-header {
+      padding: 24px 28px;
+      border-bottom: 1px solid rgba(200,75,17,.15);
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .quiz-header-left {}
+    .quiz-tag {
+      font-family: var(--ff-mono);
+      font-size: .6rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--ember);
+      margin-bottom: 6px;
+    }
+    .quiz-title {
+      font-family: var(--ff-title);
+      font-size: 1.2rem;
+      color: var(--paper);
+    }
+    .quiz-close-btn {
+      background: none; border: 1px solid rgba(245,240,232,.1);
+      color: var(--ash);
+      width: 36px; height: 36px;
+      cursor: none;
+      font-size: 1.2rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+    }
+    .quiz-close-btn:hover { border-color: var(--ember); color: var(--ember); }
+
+    .quiz-progress-bar {
+      height: 3px;
+      background: rgba(245,240,232,.06);
+      position: relative;
+    }
+    .quiz-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--ember), var(--gold));
+      transition: width .5s ease;
+      box-shadow: 0 0 12px var(--ember);
     }
 
-    /* Líneas de código animadas */
-    .splash-lines{
-      position: relative; height: 200px; width: 300px;
-      margin: 0 auto 40px;
-    }
-    .code-line{
-      position: absolute; font-family: 'Courier New', monospace;
-      font-size: 0.8rem; color: #00ffd5; opacity: 0;
-      white-space: nowrap; letter-spacing: 2px;
-    }
-    .code-line:nth-child(1){ top: 20px; left: 0; animation: slide-in 1s ease forwards; animation-delay: 0.2s }
-    .code-line:nth-child(2){ top: 60px; right: 0; animation: slide-in 1s ease forwards; animation-delay: 0.5s }
-    .code-line:nth-child(3){ top: 100px; left: 0; animation: slide-in 1s ease forwards; animation-delay: 0.8s }
-    .code-line:nth-child(4){ top: 140px; right: 0; animation: slide-in 1s ease forwards; animation-delay: 1.1s }
-
-    @keyframes slide-in{
-      from{ opacity: 0; transform: translateX(-100px) }
-      to{ opacity: 0.7; transform: translateX(0) }
+    .quiz-body {
+      padding: 28px;
     }
 
-    /* Barra de progreso */
-    .splash-progress{
-      position: relative; width: 200px; height: 4px;
-      background: rgba(0,200,255,0.1); border-radius: 2px;
-      margin: 30px auto; overflow: hidden;
-      border: 1px solid rgba(0,200,255,0.2);
+    .q-counter {
+      font-family: var(--ff-mono);
+      font-size: .6rem;
+      letter-spacing: 2px;
+      color: var(--ash);
+      text-transform: uppercase;
+      margin-bottom: 12px;
     }
-    .progress-bar{
-      height: 100%; background: linear-gradient(90deg, #00ffd5, #0099ff, #6600ff);
-      border-radius: 2px; animation: load-bar 2.5s ease-in-out infinite;
-      box-shadow: 0 0 10px rgba(0,255,213,0.8);
-    }
-
-    @keyframes load-bar{
-      0%{ width: 0% }
-      50%{ width: 100% }
-      100%{ width: 100% }
+    .q-text {
+      font-family: var(--ff-body);
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--paper);
+      margin-bottom: 24px;
+      font-style: italic;
     }
 
-    /* Texto de carga */
-    .splash-text{
-      font-family: 'Orbitron', sans-serif;
-      color: #00ffd5; font-size: 1.2rem;
-      letter-spacing: 1.5px; margin-top: 20px;
-      animation: pulse-text 1.5s ease-in-out infinite;
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option {
+      display: flex; align-items: center; gap: 16px;
+      padding: 14px 18px;
+      border: 1px solid rgba(245,240,232,.07);
+      cursor: none;
+      transition: all .2s;
+      background: rgba(245,240,232,.02);
     }
-    .splash-subtext{
-      font-family: 'Inter', sans-serif;
-      color: #9aa8bf; font-size: 0.85rem;
-      margin-top: 8px; letter-spacing: 0.5px;
+    .option:hover {
+      border-color: rgba(200,75,17,.3);
+      background: rgba(200,75,17,.06);
+      padding-left: 24px;
+    }
+    .option.selected {
+      border-color: var(--ember);
+      background: rgba(200,75,17,.1);
+    }
+    .opt-letter {
+      font-family: var(--ff-mono);
+      font-size: .65rem;
+      letter-spacing: 1px;
+      color: var(--ember);
+      width: 20px; flex-shrink: 0;
+    }
+    .opt-text {
+      font-size: .9rem;
+      line-height: 1.5;
+      color: var(--smoke);
+    }
+    .option.selected .opt-text { color: var(--paper); }
+
+    .quiz-actions {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 28px;
+      border-top: 1px solid rgba(245,240,232,.06);
+    }
+    .btn-ghost {
+      font-family: var(--ff-mono);
+      font-size: .7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: none; border: none;
+      color: var(--ash); cursor: none;
+      transition: color .2s;
+      padding: 10px 0;
+    }
+    .btn-ghost:hover { color: var(--paper); }
+    .btn-ghost:disabled { opacity: .25; pointer-events: none; }
+
+    .btn-primary {
+      font-family: var(--ff-mono);
+      font-size: .7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: var(--ember); border: none;
+      color: var(--paper); cursor: none;
+      padding: 12px 28px;
+      transition: all .2s;
+      box-shadow: 0 4px 20px rgba(200,75,17,.3);
+    }
+    .btn-primary:hover {
+      background: #e05513;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(200,75,17,.5);
+    }
+    .btn-primary:disabled { opacity: .3; pointer-events: none; }
+
+    /* Result */
+    .quiz-result {
+      padding: 40px 28px;
+      text-align: center;
+    }
+    .result-score-wrap {
+      margin: 0 auto 24px;
+      width: 120px; height: 120px;
+      border: 2px solid var(--ember);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 40px rgba(200,75,17,.2), inset 0 0 40px rgba(200,75,17,.05);
+    }
+    .result-score {
+      font-family: var(--ff-title);
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: var(--ember);
+    }
+    .result-title {
+      font-family: var(--ff-title);
+      font-size: 1.5rem;
+      color: var(--paper);
+      margin-bottom: 10px;
+    }
+    .result-sub {
+      font-family: var(--ff-mono);
+      font-size: .7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ash);
     }
 
-    @keyframes pulse-text{
-      0%, 100%{ opacity: 0.7 }
-      50%{ opacity: 1 }
-    }
-
-    /* Puntos animados */
-    .loading-dots{
-      display: inline-block; margin-left: 4px;
-    }
-    .dot{
-      display: inline-block; width: 6px; height: 6px;
-      border-radius: 50%; background: #00ffd5;
-      margin: 0 3px; animation: bounce-dot 1.4s infinite;
-    }
-    .dot:nth-child(1){ animation-delay: 0s }
-    .dot:nth-child(2){ animation-delay: 0.2s }
-    .dot:nth-child(3){ animation-delay: 0.4s }
-
-    @keyframes bounce-dot{
-      0%, 80%, 100%{ transform: translateY(0); opacity: 0.5 }
-      40%{ transform: translateY(-10px); opacity: 1 }
+    /* ─── RESPONSIVE ─────────────────────────────── */
+    @media(max-width: 900px) {
+      .s-birth { grid-template-columns: 1fr; gap: 40px; }
+      .fire-intro { grid-template-columns: 1fr; }
+      .fire-intro .big-num { font-size: 6rem; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .tool-item { grid-template-columns: 60px 1fr; }
+      .tool-desc { display: none; }
+      nav { padding: 16px 5%; }
+      .nav-links { display: none; }
+      footer { flex-direction: column; gap: 12px; text-align: center; }
+      .ice-stats { gap: 32px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ================== SPLASH SCREEN ================== -->
-  <div class="splash-screen" id="splashScreen">
-    <div class="splash-content">
-      <!-- Orbes flotantes -->
-      <div class="splash-orb orb-1"></div>
-      <div class="splash-orb orb-2"></div>
-      <div class="splash-orb orb-3"></div>
+  <!-- CURSOR -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
 
-      <!-- Líneas de código -->
-      <div class="splash-lines">
-        <div class="code-line">// Inicializando...</div>
-        <div class="code-line">const mateo = new Page();</div>
-        <div class="code-line">mateo.cargar();</div>
-        <div class="code-line">▶ Ejecutando animaciones...</div>
-      </div>
-
-      <!-- Barra de progreso -->
-      <div class="splash-progress">
-        <div class="progress-bar"></div>
-      </div>
-
-      <!-- Texto -->
-      <div class="splash-text">
-        CARGANDO PÁGINA
-        <span class="loading-dots">
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-        </span>
-      </div>
-      <div class="splash-subtext">de Mateo 7÷1</div>
+  <!-- ─── SPLASH ──────────────────────────────── -->
+  <div id="splash">
+    <div class="splash-flame">
+      <div class="flame-part f1"></div>
+      <div class="flame-part f2"></div>
+      <div class="flame-part f3"></div>
     </div>
+    <div class="splash-title">Origen Humano</div>
+    <div class="splash-bar"></div>
+    <div class="splash-sub">por Mateo 7÷1</div>
   </div>
 
-  <!-- QUIZ BUTTON + MODAL (agregado) -->
-  <button class="quiz-btn" id="openQuiz" aria-label="Abrir quiz" title="Quiz: Desafío humano">
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-      <circle cx="12" cy="12" r="10" fill="white" fill-opacity="0.06"/>
-      <path d="M8 11c.5-1.5 2-2 4-2s3.5.5 4 2" stroke="#fff" stroke-opacity="0.9" stroke-width="1.2" stroke-linecap="round"/>
-      <rect x="7" y="14" width="3" height="2" rx="0.4" fill="#fff" fill-opacity="0.9"/>
-      <rect x="14" y="14" width="3" height="2" rx="0.4" fill="#fff" fill-opacity="0.9"/>
-    </svg>
-  </button>
+  <!-- ─── NAV ─────────────────────────────────── -->
+  <nav id="mainNav">
+    <a href="#" class="nav-logo">Origen Humano</a>
+    <ul class="nav-links">
+      <li><a href="#nacimiento">Nacimiento</a></li>
+      <li><a href="#fuego">Fuego</a></li>
+      <li><a href="#herramientas">Herramientas</a></li>
+      <li><a href="#hielo">Era de Hielo</a></li>
+    </ul>
+  </nav>
 
-  <div class="quiz-overlay" id="quizOverlay" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="quiz-card" role="document">
-      <div class="quiz-hero" id="quizHero"></div>
-      <div class="quiz-header">
-        <div class="quiz-header-content">
-          <h2>Desafío: Nacimiento Humano</h2>
-          <p>15 preguntas • Puntuación: 0.0 a 5.0</p>
-        </div>
-        <button class="quiz-close" id="closeQuiz" aria-label="Cerrar quiz">✕</button>
-      </div>
-
-      <div class="quiz-body" id="quizBody">
-        <div class="progress" aria-hidden>
-          <i id="quizProgress"></i>
-          <div class="percent" id="quizPercent">0%</div>
-        </div>
-
-        <div class="question" id="questionArea">
-          <!-- Pregunta generada por JS -->
-        </div>
-
-        <div class="quiz-actions">
-          <button class="btn ghost" id="prevBtn">Anterior</button>
-          <button class="btn primary" id="nextBtn">Siguiente</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================== HERO ================== -->
+  <!-- ─── HERO ─────────────────────────────────── -->
   <div class="hero">
-    <div>
-      <h1>EL ORIGEN DEL HUMANO</h1>
-      <p>
-        La tecnología no comenzó con circuitos.
-        Comenzó con fuego, piedra y la necesidad de sobrevivir.
+    <div class="hero-bg"></div>
+    <div class="ember-field" id="emberField"></div>
+    <div style="position:relative; z-index:2;">
+      <div class="hero-eyebrow">Tecnología & Supervivencia</div>
+      <h1>EL<br><em>ORIGEN</em><br>DEL HUMANO</h1>
+      <p class="hero-sub">
+        La tecnología no comenzó con circuitos. Comenzó con fuego,
+        piedra y la necesidad urgente de sobrevivir.
       </p>
     </div>
-    <div class="scroll">⬇ Explora la historia</div>
+    <div class="hero-scroll">Descender</div>
   </div>
 
-  <!-- ================== NACIMIENTO ================== -->
-  <section class="reveal">
-    <div class="story">
-      <div>
-        <h2>El nacimiento de la humanidad</h2>
-        <p>
-          Los primeros humanos no tenían ciudades ni máquinas. Tenían frío, hambre y enfrentaban depredadores.
-          La tecnología nació como una respuesta directa al entorno. Pensar, crear y adaptarse
+  <!-- ─── NACIMIENTO ───────────────────────────── -->
+  <section id="nacimiento">
+    <div class="s-birth reveal">
+      <div class="s-birth-text">
+        <div class="section-number">01 — Orígenes</div>
+        <h2>El nacimiento de la <span>humanidad</span></h2>
+        <p class="body-text">
+          Los primeros humanos no tenían ciudades ni máquinas. Tenían frío,
+          hambre y enfrentaban depredadores cada amanecer.
+          La tecnología nació como respuesta directa al entorno: cruda,
+          urgente y absolutamente necesaria. Pensar, crear y adaptarse
           fue lo que nos separó del resto de las especies.
         </p>
       </div>
-      <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee" alt="Humanos primitivos" />
+      <div class="img-frame">
+        <img
+          src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80"
+          alt="Paisaje primitivo"
+          loading="lazy"
+        />
+      </div>
     </div>
   </section>
 
-  <!-- ================== FUEGO ================== -->
-  <section class="reveal">
-    <h2>El fuego: la clave de la vida</h2>
-    <p>
-      El fuego cambió todo. Permitió cocinar alimentos, ahuyentar animales,
-      soportar climas extremos y extender la actividad humana durante la noche.
-      Fue la primera gran revolución tecnológica.
-    </p>
-
-    <div class="cards">
-      <div class="card">
+  <!-- ─── FUEGO ────────────────────────────────── -->
+  <section id="fuego" class="s-fire">
+    <div class="fire-intro reveal">
+      <div class="big-num" aria-hidden="true">I</div>
+      <div>
+        <div class="section-number">02 — Revolución</div>
+        <h2>El fuego:<br>clave de la <span>vida</span></h2>
+        <p class="body-text">
+          El fuego cambió todo. Permitió cocinar alimentos, ahuyentar animales,
+          soportar climas extremos y extender la actividad humana durante la noche.
+          Fue la primera y más poderosa revolución tecnológica de nuestra especie.
+        </p>
+      </div>
+    </div>
+    <div class="cards-grid reveal">
+      <div class="fire-card">
+        <span class="fire-card-icon">🔥</span>
         <h3>Calor</h3>
-        <p>Protección contra el frío y supervivencia en ambientes hostiles.</p>
+        <p>Protección absoluta contra el frío y supervivencia en ambientes hostiles donde ninguna otra especie resistía.</p>
       </div>
-      <div class="card">
-        <h3>Comida</h3>
-        <p>Cocinar aumentó la energía disponible y el desarrollo cerebral.</p>
+      <div class="fire-card">
+        <span class="fire-card-icon">🍖</span>
+        <h3>Alimentación</h3>
+        <p>Cocinar liberó energía atrapada en los alimentos y aceleró directamente el desarrollo del cerebro humano.</p>
       </div>
-      <div class="card">
+      <div class="fire-card">
+        <span class="fire-card-icon">🤝</span>
         <h3>Comunidad</h3>
-        <p>El fuego reunió a los humanos y fortaleció la comunicación.</p>
+        <p>El fuego reunió a los grupos, fortaleció la comunicación y dio origen al pensamiento colectivo.</p>
       </div>
     </div>
   </section>
 
-  <!-- ================== ARMAS ================== -->
-  <section class="reveal">
-    <h2>Armas y herramientas</h2>
-    <p>
-      La piedra tallada, las lanzas y posteriormente los arcos
-      permitieron cazar mejor y defenderse.
-      Cada herramienta era una extensión del cuerpo humano.
-    </p>
-
-    <div class="cards">
-      <div class="card">
-        <h3>Piedra tallada</h3>
-        <p>El inicio de la ingeniería primitiva.</p>
+  <!-- ─── HERRAMIENTAS ─────────────────────────── -->
+  <section id="herramientas">
+    <div class="reveal">
+      <div class="section-number">03 — Extensión del cuerpo</div>
+      <h2>Armas y <span>herramientas</span></h2>
+      <p class="body-text">
+        La piedra tallada, las lanzas y luego los arcos permitieron cazar mejor
+        y defenderse con eficacia. Cada herramienta era una extensión del cuerpo
+        humano: ingenio materializado.
+      </p>
+    </div>
+    <div class="tools-list reveal">
+      <div class="tool-item">
+        <span class="tool-num">01</span>
+        <span class="tool-name">Piedra Tallada</span>
+        <span class="tool-desc">El inicio de la ingeniería primitiva. El primer acto consciente de transformar el mundo.</span>
       </div>
-      <div class="card">
-        <h3>Lanzas</h3>
-        <p>Caza a distancia, mayor seguridad.</p>
+      <div class="tool-item">
+        <span class="tool-num">02</span>
+        <span class="tool-name">Lanzas</span>
+        <span class="tool-desc">Caza a distancia segura. Mayor eficiencia energética y supervivencia del grupo.</span>
       </div>
-      <div class="card">
-        <h3>Arcos</h3>
-        <p>Precisión, estrategia y ventaja evolutiva.</p>
+      <div class="tool-item">
+        <span class="tool-num">03</span>
+        <span class="tool-name">Arcos</span>
+        <span class="tool-desc">Precisión, estrategia y ventaja evolutiva. El arco fue la primera máquina de almacenamiento de energía.</span>
+      </div>
+      <div class="tool-item">
+        <span class="tool-num">04</span>
+        <span class="tool-name">Agujas de hueso</span>
+        <span class="tool-desc">Ropa ajustada al cuerpo: la primera tecnología textil que hizo posible sobrevivir al frío extremo.</span>
       </div>
     </div>
   </section>
 
-  <!-- ================== ICE AGE ================== -->
-  <section class="ice reveal">
-    <h2>La era de hielo</h2>
-    <p>
-      Durante la era de hielo, los humanos sobrevivieron gracias a la ropa,
-      refugios, fuego y cooperación.
-      No fue la fuerza, fue la inteligencia colectiva.
-    </p>
+  <!-- ─── TIMELINE ─────────────────────────────── -->
+  <section class="s-timeline">
+    <div class="section-number reveal">04 — Línea del tiempo</div>
+    <h2 class="reveal">Hitos de la <span>evolución</span></h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-era">Hace 3.3 millones de años</div>
+        <div class="tl-title">Primeras herramientas de piedra</div>
+        <p class="tl-body">Los australopitecos tallaron las primeras piedras en Lomekwi, Kenia. El pensamiento causal había nacido.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-era">Hace 1 millón de años</div>
+        <div class="tl-title">Control del fuego</div>
+        <p class="tl-body">Evidencias en la cueva de Wonderwerk, Sudáfrica. El fuego inició la cocina y el lenguaje nocturno alrededor de las llamas.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-era">Hace 400.000 años</div>
+        <div class="tl-title">Lanzas de madera</div>
+        <p class="tl-body">Las lanzas de Schöningen son las armas más antiguas conservadas. Caza coordinada en grupos.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-era">Hace 26.000 años</div>
+        <div class="tl-title">Cúspide de la Era de Hielo</div>
+        <p class="tl-body">Con ropa cosida, refugios y cooperación, el Homo sapiens sobrevivió donde todo lo demás pereció.</p>
+      </div>
+    </div>
   </section>
 
-  <!-- ================== FINAL ================== -->
+  <!-- ─── ERA DE HIELO ─────────────────────────── -->
+  <section id="hielo" class="s-ice">
+    <div class="snowfield" id="snowfield"></div>
+    <div style="position:relative;z-index:2;">
+      <div class="ice-quote reveal">
+        <blockquote>
+          No fue la fuerza, fue la inteligencia colectiva la que nos hizo sobrevivir el Pleistoceno.
+        </blockquote>
+        <cite>La era de hielo — hace 26.000 años</cite>
+      </div>
+      <div class="ice-stats reveal">
+        <div class="ice-stat">
+          <div class="ice-stat-num">−20°C</div>
+          <div class="ice-stat-label">Temperatura media</div>
+        </div>
+        <div class="ice-stat">
+          <div class="ice-stat-num">2.5M</div>
+          <div class="ice-stat-label">Años de glaciaciones</div>
+        </div>
+        <div class="ice-stat">
+          <div class="ice-stat-num">100%</div>
+          <div class="ice-stat-label">Supervivencia por ingenio</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ───────────────────────────────── -->
   <footer>
-    Proyecto cinematográfico educativo • Creado por Mateo 7÷1
+    <span class="footer-brand">Origen Humano — Tecnología & Supervivencia</span>
+    <span class="footer-credit">Proyecto educativo por Mateo 7÷1</span>
   </footer>
 
-  <!-- Creator badge -->
-  <div class="creator-badge" title="Página creada por Mateo 7÷1">Mateo 7÷1</div>
+  <!-- ─── QUIZ FAB ──────────────────────────────── -->
+  <button class="quiz-fab" id="quizFab" aria-label="Abrir quiz">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+      <line x1="12" y1="17" x2="12.01" y2="17" stroke-width="3"/>
+    </svg>
+  </button>
 
-  <!-- ================== JS ================== -->
+  <!-- ─── QUIZ OVERLAY ──────────────────────────── -->
+  <div class="quiz-overlay" id="quizOverlay" role="dialog" aria-modal="true">
+    <div class="quiz-panel">
+      <div class="quiz-header">
+        <div class="quiz-header-left">
+          <div class="quiz-tag">Desafío de conocimiento</div>
+          <div class="quiz-title">El Nacimiento Humano</div>
+        </div>
+        <button class="quiz-close-btn" id="quizClose">✕</button>
+      </div>
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" id="quizFill" style="width:0%"></div>
+      </div>
+      <div id="quizContent"></div>
+    </div>
+  </div>
+
+  <!-- ─── SCRIPTS ──────────────────────────────── -->
   <script>
-    const reveals = document.querySelectorAll('.reveal');
+    /* ── Cursor ──────────────────────────────────── */
+    const cursor = document.getElementById('cursor');
+    const cursorRing = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
+    function animRing() { rx += (mx - rx) * .15; ry += (my - ry) * .15; cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px'; requestAnimationFrame(animRing); }
+    animRing();
+    document.querySelectorAll('a, button, .option, .fire-card, .tool-item').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.width = '20px'; cursor.style.height = '20px'; cursorRing.style.width = '60px'; cursorRing.style.height = '60px'; });
+      el.addEventListener('mouseleave', () => { cursor.style.width = '12px'; cursor.style.height = '12px'; cursorRing.style.width = '40px'; cursorRing.style.height = '40px'; });
+    });
 
-    function onScroll() {
-      const h = window.innerHeight;
-      reveals.forEach(el => {
-        if (el.getBoundingClientRect().top < h - 120) {
-          el.classList.add('active');
+    /* ── Splash ──────────────────────────────────── */
+    window.addEventListener('load', () => {
+      setTimeout(() => document.getElementById('splash').classList.add('out'), 3200);
+    });
+
+    /* ── Embers ──────────────────────────────────── */
+    const emberField = document.getElementById('emberField');
+    function spawnEmber() {
+      const e = document.createElement('div');
+      e.className = 'ember';
+      e.style.left = (10 + Math.random() * 80) + '%';
+      e.style.bottom = '0';
+      const dur = 4 + Math.random() * 6;
+      const size = 2 + Math.random() * 3;
+      e.style.width = size + 'px'; e.style.height = size + 'px';
+      e.style.animationDuration = dur + 's';
+      e.style.animationDelay = Math.random() * -8 + 's';
+      emberField.appendChild(e);
+      setTimeout(() => e.remove(), (dur + 2) * 1000);
+    }
+    for (let i = 0; i < 30; i++) spawnEmber();
+    setInterval(spawnEmber, 600);
+
+    /* ── Snow ─────────────────────────────────────── */
+    const snowfield = document.getElementById('snowfield');
+    function spawnSnow() {
+      const s = document.createElement('div');
+      s.className = 'snowflake';
+      s.style.left = Math.random() * 100 + '%';
+      const dur = 6 + Math.random() * 10;
+      s.style.animationDuration = dur + 's';
+      s.style.animationDelay = Math.random() * -15 + 's';
+      snowfield.appendChild(s);
+      setTimeout(() => s.remove(), (dur + 2) * 1000);
+    }
+    for (let i = 0; i < 40; i++) spawnSnow();
+    setInterval(spawnSnow, 800);
+
+    /* ── Nav scroll ──────────────────────────────── */
+    const mainNav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+      mainNav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    /* ── Reveal on scroll ────────────────────────── */
+    const reveals = document.querySelectorAll('.reveal, .tl-item');
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          io.unobserve(e.target);
         }
       });
-    }
+    }, { threshold: 0.15 });
+    reveals.forEach(el => io.observe(el));
 
-    window.addEventListener('scroll', onScroll);
-    onScroll();
-  </script>
-
-  <!-- QUIZ JS (mejorado) -->
-  <script>
-    (function(){
-      const openBtn = document.getElementById('openQuiz');
-      const overlay = document.getElementById('quizOverlay');
-      const closeBtn = document.getElementById('closeQuiz');
-      const qArea = document.getElementById('questionArea');
-      const progressEl = document.getElementById('quizProgress');
-      const percentEl = document.getElementById('quizPercent');
-      const prevBtn = document.getElementById('prevBtn');
-      const nextBtn = document.getElementById('nextBtn');
-      const heroEl = document.getElementById('quizHero');
-
-      const heroImages = [
-        'https://images.unsplash.com/photo-1504198453319-5ce911bafcde?auto=format&fit=crop&w=1600&q=80',
-        'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=80',
-        'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80',
-        'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80'
-      ];
-
+    /* ── QUIZ ────────────────────────────────────── */
+    (function() {
       const questions = [
-        {q:'¿Con qué comenzó realmente la tecnología humana según la página?', opts:['Con circuitos y computadoras','Con fuego, piedra y la necesidad de sobrevivir','Con máquinas modernas'], a:1},
-        {q:'¿Qué NO tenían los primeros humanos?', opts:['Frío y hambre','Ciudades ni máquinas','Depredadores'], a:1},
-        {q:'¿Cuál era la principal función del fuego para los humanos primitivos?', opts:['Solo proporcionar luz','Cocinar alimentos, ahuyentar animales y soportar climas extremos','Crear armas'], a:1},
-        {q:'¿Cuál fue la primera gran revolución tecnológica?', opts:['El descubrimiento del fuego','La invención de la rueda','La agricultura'], a:0},
-        {q:'¿Qué beneficio directo trajo cocinar alimentos?', opts:['Mejorar la visión nocturna','Aumentar la energía disponible y el desarrollo cerebral','Eliminar la necesidad de herramientas'], a:1},
-        {q:'El fuego reunió a los humanos para fortalecer:', opts:['La agricultura','La comunicación','La construcción de ciudades'], a:1},
-        {q:'¿Cuáles fueron las armas y herramientas primitivas mencionadas?', opts:['Guns, explosivos y metales','Piedra tallada, lanzas y arcos','Huesos y maderas'], a:1},
-        {q:'¿Qué permitía la piedra tallada?', opts:['Construir casas grandes','El inicio de la ingeniería primitiva','Crear fuego'], a:1},
-        {q:'¿Cuál era la ventaja principal de las armas a distancia?', opts:['Eran más baratas','Permitían caza a distancia con mayor seguridad','Eran más fáciles de hacer'], a:1},
-        {q:'Según la página, ¿qué era cada herramienta para el humano?', opts:['Un arma de guerra','Una extensión del cuerpo humano','Un artículo de comercio'], a:1},
-        {q:'¿Cuáles fueron las claves para sobrevivir en la era de hielo?', opts:['Únicamente la fuerza física','Ropa, refugios, fuego y cooperación','La inteligencia individual'], a:1},
-        {q:'¿Qué fue más importante que la fuerza en la era de hielo?', opts:['La velocidad','La inteligencia colectiva','La suerte'], a:1},
-        {q:'¿Qué permitió al fuego extender la actividad humana?', opts:['Aumentar la visión nocturna','Permitir actividad durante la noche','Eliminar la necesidad de descanso'], a:1},
-        {q:'¿Cuál de los siguientes fue un reto importante para los primeros humanos?', opts:['La contaminación del aire','Enfrentar depredadores y la escasez de comida','El cambio climático moderno'], a:1},
-        {q:'¿En qué se separó el humano del resto de las especies?', opts:['En su tamaño físico','En pensar, crear y adaptarse','En su capacidad de volar'], a:1}
+        { q: '¿Con qué comenzó realmente la tecnología humana?', opts: ['Con circuitos y computadoras', 'Con fuego, piedra y la necesidad de sobrevivir', 'Con máquinas modernas'], a: 1 },
+        { q: '¿Qué NO tenían los primeros humanos?', opts: ['Frío y hambre', 'Ciudades ni máquinas', 'Depredadores'], a: 1 },
+        { q: '¿Cuál fue la primera gran revolución tecnológica de la humanidad?', opts: ['El descubrimiento del fuego', 'La invención de la rueda', 'La agricultura'], a: 0 },
+        { q: '¿Qué beneficio trajo cocinar alimentos?', opts: ['Mejoró la visión nocturna', 'Aumentó la energía y el desarrollo cerebral', 'Eliminó la necesidad de herramientas'], a: 1 },
+        { q: '¿Qué fortaleció el fuego entre los grupos humanos?', opts: ['La agricultura', 'La comunicación y cohesión social', 'La construcción de ciudades'], a: 1 },
+        { q: '¿Cuáles fueron las armas primitivas mencionadas en la página?', opts: ['Guns, explosivos y metales', 'Piedra tallada, lanzas y arcos', 'Huesos y maderas'], a: 1 },
+        { q: '¿Qué representaba la piedra tallada?', opts: ['Un arma de guerra exclusiva', 'El inicio de la ingeniería primitiva', 'Un artículo de comercio'], a: 1 },
+        { q: '¿Cuál era la ventaja de las armas a distancia como el arco?', opts: ['Eran más baratas de hacer', 'Caza a distancia segura y estrategia', 'Eran de mejor apariencia'], a: 1 },
+        { q: 'Cada herramienta era considerada:', opts: ['Una forma de arte', 'Una extensión del cuerpo humano', 'Un artículo de lujo'], a: 1 },
+        { q: '¿Qué fue clave para sobrevivir en la era de hielo?', opts: ['Solo la fuerza física', 'Ropa, refugios, fuego y cooperación', 'La suerte y el azar'], a: 1 },
+        { q: '¿Qué fue más importante que la fuerza en la era de hielo?', opts: ['La velocidad de carrera', 'La inteligencia colectiva', 'El tamaño corporal'], a: 1 },
+        { q: '¿Qué permitió al fuego extender la jornada humana?', opts: ['Aumentar la visión nocturna', 'Permitir actividad durante la noche', 'Eliminar la necesidad de sueño'], a: 1 },
+        { q: '¿Cuál fue el mayor reto para los primeros humanos?', opts: ['La contaminación', 'Depredadores y escasez de alimento', 'El cambio climático moderno'], a: 1 },
+        { q: '¿Cuándo se produjeron las primeras herramientas de piedra conocidas?', opts: ['Hace 10.000 años', 'Hace 3.3 millones de años', 'Hace 500.000 años'], a: 1 },
+        { q: '¿En qué separó el humano del resto de las especies?', opts: ['En su tamaño físico', 'En pensar, crear y adaptarse', 'En su capacidad de correr'], a: 1 }
       ];
 
-      let idx = 0; const answers = new Array(questions.length).fill(null);
+      let idx = 0;
+      const answers = new Array(questions.length).fill(null);
 
-      // Función para mezclar el array de preguntas
-      function shuffleQuestions() {
-        for (let i = questions.length - 1; i > 0; i--) {
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [questions[i], questions[j]] = [questions[j], questions[i]];
+          [arr[i], arr[j]] = [arr[j], arr[i]];
         }
+      }
+
+      function open() {
+        shuffle(questions);
         answers.fill(null);
         idx = 0;
+        document.getElementById('quizOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+        render();
       }
 
-      function openQuiz(){ shuffleQuestions(); overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); render(); document.body.style.overflow='hidden'; }
-      function closeQuiz(){ overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); document.body.style.overflow='auto'; }
-
-      function updateProgress(){
-        const pct = Math.round(((idx+1)/questions.length)*100);
-        progressEl.style.width = pct + '%';
-        if(percentEl) percentEl.textContent = pct + '%';
+      function close() {
+        document.getElementById('quizOverlay').classList.remove('open');
+        document.body.style.overflow = '';
       }
 
-      function render(){
+      function setProgress() {
+        const pct = ((idx + 1) / questions.length) * 100;
+        document.getElementById('quizFill').style.width = pct + '%';
+      }
+
+      function render() {
+        setProgress();
         const q = questions[idx];
-        updateProgress();
-        // hero image for visual mood
-        if(heroEl) heroEl.style.backgroundImage = `url('${heroImages[idx % heroImages.length]}')`;
+        const content = document.getElementById('quizContent');
 
-        qArea.innerHTML = '';
-        const qText = document.createElement('div'); qText.className='q-text'; qText.textContent = `${idx+1}. ${q.q}`;
-        qArea.appendChild(qText);
+        content.innerHTML = `
+          <div class="quiz-body">
+            <div class="q-counter">Pregunta ${idx + 1} de ${questions.length}</div>
+            <div class="q-text">${q.q}</div>
+            <div class="options">
+              ${q.opts.map((o, i) => `
+                <div class="option${answers[idx] === i ? ' selected' : ''}" data-i="${i}" role="button" tabindex="0">
+                  <span class="opt-letter">${['A', 'B', 'C'][i]}</span>
+                  <span class="opt-text">${o}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <div class="quiz-actions">
+            <button class="btn-ghost" id="qPrev" ${idx === 0 ? 'disabled' : ''}>← Anterior</button>
+            <button class="btn-primary" id="qNext">${idx === questions.length - 1 ? 'Ver resultado' : 'Siguiente →'}</button>
+          </div>
+        `;
 
-        const opts = document.createElement('div'); opts.className='options';
-        q.opts.forEach((o,i)=>{
-          const el = document.createElement('div'); el.className='option'; el.tabIndex=0; el.setAttribute('data-i',i);
-          el.innerHTML = `<span class="dot"></span><div class="label"><strong>${['A)','B)','C)'][i]}</strong> &nbsp; ${o}</div>`;
-          if(answers[idx]===i) el.classList.add('selected');
-          el.addEventListener('click', ()=>{ select(i); });
-          el.addEventListener('keypress', (ev)=>{ if(ev.key==='Enter') select(i); });
-          opts.appendChild(el);
+        content.querySelectorAll('.option').forEach(el => {
+          el.addEventListener('click', () => {
+            answers[idx] = +el.dataset.i;
+            content.querySelectorAll('.option').forEach(o => o.classList.toggle('selected', +o.dataset.i === answers[idx]));
+          });
         });
-        qArea.appendChild(opts);
 
-        prevBtn.disabled = idx===0;
-        nextBtn.textContent = (idx===questions.length-1)? 'Terminar' : 'Siguiente';
+        document.getElementById('qPrev').addEventListener('click', () => { idx--; render(); });
+        document.getElementById('qNext').addEventListener('click', () => {
+          if (answers[idx] === null) { alert('Selecciona una opción.'); return; }
+          if (idx < questions.length - 1) { idx++; render(); }
+          else { showResult(); }
+        });
       }
 
-      function select(i){ answers[idx]=i; const els = qArea.querySelectorAll('.option'); els.forEach(el=>el.classList.remove('selected')); const sel = qArea.querySelector(`.option[data-i="${i}"]`); if(sel) sel.classList.add('selected'); }
+      function showResult() {
+        const correct = answers.filter((a, i) => a === questions[i].a).length;
+        const pct = correct / questions.length;
+        const score = Math.round(pct * 50) / 10;
+        const msg = score >= 4 ? 'Dominio excepcional.' : score >= 3 ? 'Buen entendimiento. Sigue explorando.' : 'Vuelve a repasar el contenido.';
 
-      function prevHandler(){ if(idx>0){ idx--; render(); } }
-      function nextHandler(){ if(answers[idx]===null){ alert('Selecciona una opción antes de continuar.'); return; } if(idx<questions.length-1){ idx++; render(); } else { finish(); } }
+        document.getElementById('quizFill').style.width = '100%';
+        document.getElementById('quizContent').innerHTML = `
+          <div class="quiz-result">
+            <div class="result-score-wrap">
+              <div class="result-score">${score.toFixed(1)}</div>
+            </div>
+            <div class="result-title">${score >= 4 ? '¡Excelente!' : score >= 3 ? 'Bien hecho' : 'Sigue aprendiendo'}</div>
+            <div class="result-sub">${correct} de ${questions.length} correctas · ${msg}</div>
+          </div>
+          <div class="quiz-actions">
+            <button class="btn-ghost" id="qRetry">Intentar de nuevo</button>
+            <button class="btn-primary" id="qDone">Cerrar</button>
+          </div>
+        `;
 
-      prevBtn.addEventListener('click', prevHandler);
-      nextBtn.addEventListener('click', nextHandler);
+        document.getElementById('qRetry').addEventListener('click', () => { answers.fill(null); idx = 0; render(); });
+        document.getElementById('qDone').addEventListener('click', close);
 
-      function finish(){
-        let correct = 0; for(let i=0;i<questions.length;i++){ if(answers[i]===questions[i].a) correct++; }
-        const pct = correct / questions.length; // 0..1
-        const decimalScore = Math.round((pct*5)*10)/10; // 0.0 - 5.0 step 0.1
-
-        // Mostrar resultados
-        qArea.innerHTML = `<div class="result">
-          <div class="score-big">${decimalScore} / 5.0</div>
-          <div class="score-sub">Aciertos: ${correct} de ${questions.length} (${Math.round(pct*100)}%)</div>
-          <div style="margin-top:12px;color:#9aa8bf">${decimalScore>=4 ? 'Excelente comprensión.' : (decimalScore>=3 ? 'Buen entendimiento, repasa algunos puntos.' : 'Sigue aprendiendo — vuelve a intentarlo')}</div>
-        </div>`;
-        progressEl.style.width = '100%'; if(percentEl) percentEl.textContent = '100%';
-        prevBtn.style.display = 'none';
-        // show confetti for good scores
-        if(decimalScore>=4) launchConfetti();
-
-        // cambiar comportamiento del botón siguiente
-        nextBtn.textContent = 'Volver a intentar';
-        nextBtn.removeEventListener('click', nextHandler);
-        nextBtn.addEventListener('click', resetHandler);
+        if (score >= 4) launchConfetti();
       }
 
-      function resetHandler(){ idx = 0; answers.fill(null); prevBtn.style.display='inline-block'; prevBtn.disabled=true; nextBtn.removeEventListener('click', resetHandler); nextBtn.addEventListener('click', nextHandler); render(); }
-
-      // Confetti simple
-      function launchConfetti(){
-        const colors = ['#00ffd5','#0066ff','#ffd580','#ff7ab6','#7bffb8'];
-        const count = 36;
-        for(let i=0;i<count;i++){
-          const el = document.createElement('div'); el.className='confetti-piece';
-          el.style.background = colors[Math.floor(Math.random()*colors.length)];
-          el.style.left = (50 + (Math.random()*60-30)) + '%';
-          el.style.top = '-10%';
-          const rot = Math.random()*360;
-          el.style.transform = `translateY(0) rotate(${rot}deg)`;
+      function launchConfetti() {
+        const colors = ['#c84b11', '#b8860b', '#f5f0e8', '#e05513', '#d4a017'];
+        for (let i = 0; i < 50; i++) {
+          const el = document.createElement('div');
+          el.style.cssText = `
+            position:fixed; z-index:99999; pointer-events:none;
+            width:${4 + Math.random() * 6}px; height:${4 + Math.random() * 6}px;
+            background:${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius:${Math.random() > .5 ? '50%' : '0'};
+            left:${20 + Math.random() * 60}%;
+            top:-10px;
+          `;
           document.body.appendChild(el);
-          // animate
-          const dx = (Math.random()*140-70);
-          const dy = 120 + Math.random()*280;
-          const dur = 2000 + Math.random()*1200;
           el.animate([
-            { transform: `translateY(0) rotate(${rot}deg)`, opacity:1 },
-            { transform: `translate(${dx}px, ${dy}px) rotate(${rot+180}deg)`, opacity:0.1 }
-          ], { duration: dur, easing: 'cubic-bezier(.2,.8,.2,1)' });
-          setTimeout(()=>el.remove(), 3200);
+            { transform: `translateY(0) rotate(0deg)`, opacity: 1 },
+            { transform: `translateY(${60 + Math.random() * 50}vh) translateX(${(Math.random() - .5) * 200}px) rotate(${360 * (Math.random() > .5 ? 1 : -1)}deg)`, opacity: 0 }
+          ], { duration: 2000 + Math.random() * 1000, easing: 'cubic-bezier(.2,.8,.2,1)' });
+          setTimeout(() => el.remove(), 3500);
         }
       }
 
-      // apertura / cierre
-      openBtn.addEventListener('click', openQuiz);
-      closeBtn.addEventListener('click', closeQuiz);
-      overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeQuiz(); });
-
-      // init
-      render();
+      document.getElementById('quizFab').addEventListener('click', open);
+      document.getElementById('quizClose').addEventListener('click', close);
+      document.getElementById('quizOverlay').addEventListener('click', e => { if (e.target === document.getElementById('quizOverlay')) close(); });
     })();
-
-    // ================== SPLASH SCREEN LOGIC ==================
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const splash = document.getElementById('splashScreen');
-        if (splash) {
-          splash.classList.add('hidden');
-        }
-      }, 7000);
-    });
   </script>
-
 </body>
 </html>
